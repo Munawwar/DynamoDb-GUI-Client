@@ -25,15 +25,15 @@ function correctInputs(state: DatabaseModuleState, serviceType: string) {
   switch (serviceType) {
     case 'remote':
       if (state.submitForm.configs.region === 'cn-north-1' || state.submitForm.configs.region === 'cn-northwest-1') {
-         state.submitForm.configs.endpoint = `https://dynamodb.${
-             state.submitForm.configs.region
-           }.amazonaws.com.cn`;
-       } else {
-       state.submitForm.configs.endpoint = `https://dynamodb.${
-         state.submitForm.configs.region
-       }.amazonaws.com`;
-       }
-       state.submitForm.name = state.submitForm.name || `Database ${state.list.length + 1}`;
+        state.submitForm.configs.endpoint = `https://dynamodb.${
+          state.submitForm.configs.region
+        }.amazonaws.com.cn`;
+      } else {
+        state.submitForm.configs.endpoint = `https://dynamodb.${
+          state.submitForm.configs.region
+        }.amazonaws.com`;
+      }
+      state.submitForm.name = state.submitForm.name || `Database ${state.list.length + 1}`;
       break;
     case 'local':
       // state.submitForm.configs.region = 'localhost';

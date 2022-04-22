@@ -127,7 +127,7 @@ function changeFilterValueType(state: RecordModuleState) {
 function setFilterValueType(state: RecordModuleState, valueType: string) {
   switch (valueType) {
     case 'string':
-      state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>='];
+      state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>=', 'begins_with'];
       break;
     case 'number':
       state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>='];

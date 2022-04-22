@@ -178,10 +178,13 @@ async function getRecords(
         Limit: state.limit,
         ExclusiveStartKey: state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
         FilterExpression:
-          state.filtered &&
-          `${state.filterParams.filterColumn} ${
-            state.filterParams.filterExpr
-          } :${state.filterParams.filterColumn}1`,
+          state.filtered && (
+            state.filterParams.filterExpr == 'begins_with' ?
+              `begins_with(${state.filterParams.filterColumn}, :${state.filterParams.filterColumn}1)` :
+              `${state.filterParams.filterColumn} ${
+                state.filterParams.filterExpr
+              } :${state.filterParams.filterColumn}1`
+          ),
         ExpressionAttributeValues: state.filtered && {
           [':' + state.filterParams.filterColumn + '1']: state.filterParams
             .filterValue,

@@ -22,7 +22,7 @@ const state: RecordModuleState = {
     filterValue: '',
     valueType: '',
     types: ['number', 'string', 'isNull', 'boolean'],
-    expressions: ['=', '!=', '<', '>', '<=', '>='],
+    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with'],
   },
 };
 

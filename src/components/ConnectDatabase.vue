@@ -96,5 +96,5 @@ export default class ConnectDatabase extends Vue {
 .el-form
   width 100%
   border-radius 2px
-  height 60vh
+  height 65vh
 </style>

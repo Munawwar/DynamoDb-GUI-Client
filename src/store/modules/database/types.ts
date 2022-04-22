@@ -2,6 +2,7 @@ export interface SingleDatabaseModuleState {
   name: string;
   accessKeyId: string;
   secretAccessKey: string;
+  sessionToken?: string;
   region: string;
   maxRetries: number;
 }
@@ -23,6 +24,7 @@ export interface SubmitForm {
 export interface DbConfigs {
   accessKeyId: string;
   secretAccessKey: string;
+  sessionToken?: string;
   region: string;
   endpoint: string;
   maxRetries: number;

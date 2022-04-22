@@ -16,6 +16,8 @@
             el-input(v-model="configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
               template(slot="append")
                 el-button(icon="el-icon-view" @click="showSecretKey")
+          el-form-item(label="Session Token (Optional)")
+            el-input(v-model="configs.sessionToken" placeholder="Session token")
         ActionButtons(
           :cancelHandler="setToDefault"
           :confirmHandler="submitRemoteForm"
@@ -94,5 +96,5 @@ export default class ConnectDatabase extends Vue {
 .el-form
   width 100%
   border-radius 2px
-  height 50vh
+  height 60vh
 </style>

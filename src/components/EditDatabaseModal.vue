@@ -15,6 +15,8 @@
           el-input(v-model="submitForm.configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
             template(slot="append")
               el-button(icon="el-icon-view" @click="showSecretKey")
+        el-form-item(label="Session Token")
+            el-input(v-model="configs.sessionToken" placeholder="Session token")
       .local(v-if="submitForm.configs.region === 'localhost'")
         el-form-item(label="Local Database Endpoint" required)
           el-input(placeholder="Enter Endpoint" @keyup.enter.native="submitLocalForm" v-model="submitForm.configs.endpoint")

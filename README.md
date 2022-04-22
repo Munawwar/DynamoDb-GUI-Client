@@ -1,8 +1,7 @@
 # DynamoDb-GUI-Client
 
-### (This project is no longer supported)
-First, of all, I really appreciate the work of everyone who contributed to this project so far. This was really challenging and interesting project for me when I get my first job in programming. Unfortunately due to the lack of time and loss of personal interest on this, I will no longer contribute to this project. Thank you very much for supporting me and for every star given to this project. Also, I want to share with you the app that I just saw for database management directly from AWS development team, give it a try they did a good job [NoSQL Workbench](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/workbench.settingup.html). 
-Sincerely yours [Arattian::LinkedIn](https://www.linkedin.com/in/misakpoghosyan/)
+This project is a fork maintained from the original DynamoDb-GUI-Client
+(https://github.com/Arattian/DynamoDb-GUI-Client). Thanks to previous devs for their hard work.
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 
@@ -10,11 +9,11 @@ Sincerely yours [Arattian::LinkedIn](https://www.linkedin.com/in/misakpoghosyan/
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 
-### [Release v3.3.1](https://github.com/Arattian/DynamoDb-GUI-Client/releases/tag/3.3.1)
+### [Release v3.4.0](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.4.0)
 
-#### [Download for MacOS (.dmg)](https://github.com/Arattian/DynamoDb-GUI-Client/releases/download/3.3.1/DynamoDbGUI-mac-3.3.1.dmg)
+#### [Download for MacOS (.dmg)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.0/DynamoDbGUI-mac-3.4.0.dmg)
 
-#### [Download for MacOS (.zip)](https://github.com/Arattian/DynamoDb-GUI-Client/releases/download/3.3.1/DynamoDbGUI-mac-3.3.1.zip)
+#### [Download for MacOS (.zip)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.0/DynamoDbGUI-mac-3.4.0.zip)
 
 ### [Release v2.1.1 || Old UI](https://github.com/Arattian/DynamoDb-GUI-Client/releases/tag/v2.1.1)
 
@@ -30,7 +29,7 @@ Sincerely yours [Arattian::LinkedIn](https://www.linkedin.com/in/misakpoghosyan/
 ## Run
 
 ```bash
-git clone https://github.com/Arattian/DynamoDb-GUI-Client.git
+git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
 # Electron serve
@@ -42,7 +41,7 @@ npm start
 ## Build Instructions
 
 ```bash
-git clone https://github.com/Arattian/DynamoDb-GUI-Client.git
+git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
 # Electron application build(This will build app for your OS)

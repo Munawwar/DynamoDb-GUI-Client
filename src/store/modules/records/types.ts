@@ -6,6 +6,9 @@ export interface RecordModuleState {
   hashKey: string;
   rangeKey: string;
   header: any[];
+  headerType: {
+    [header: string]: string
+  };
   data: any[];
   filtered: true | undefined;
   limit: number | undefined;

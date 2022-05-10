@@ -1,6 +1,7 @@
 import { GetterTree } from 'vuex';
 import { RecordModuleState } from './types';
 import { RootState } from '@/store/types';
+import getNaturalKeySorter from 'natural-sort-by-key';
 
 const keys = (state: RecordModuleState) => {
   return {
@@ -11,13 +12,15 @@ const keys = (state: RecordModuleState) => {
 
 const tableDataPage = (state: RecordModuleState) => state.data;
 
+const valueSorter = getNaturalKeySorter('value');
+
 const getKeys = (state: RecordModuleState) => (_: any, cb: any) => {
   return cb(
     state.header.map((item) => {
       return {
         value: item,
       };
-    }),
+    }).sort(valueSorter),
   );
 };
 

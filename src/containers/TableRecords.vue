@@ -3,6 +3,7 @@
     RecordListFilter(
       :getKeys="getKeys"
       :filterRecords="filterRecords"
+      :setFilterColumn="setFilterColumn"
       :setFilterValueType="setFilterValueType"
       :setNotEqualExpr="setNotEqualExpr"
       :filtered="records.filtered"
@@ -74,6 +75,8 @@ export default class TableRecords extends Vue {
   @Mutation('toggleCreateModal', { namespace }) private toggleCreateModal: any;
   @Mutation('toggleGroupDeleteModal', { namespace })
   private toggleGroupDeleteModal: any;
+  @Mutation('setFilterColumn', { namespace })
+  private setFilterColumn: any;
   @Mutation('setFilterValueType', { namespace })
   private setFilterValueType: any;
   @Mutation('setNotEqualExpr', { namespace }) private setNotEqualExpr: any;

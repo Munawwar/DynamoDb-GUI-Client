@@ -75,11 +75,18 @@ function extractKeys(state: RecordModuleState, schema: any) {
 function setHeader(state: RecordModuleState) {
   const extractData = state.data;
   state.header = [];
+  state.headerType = {};
   for (const row of extractData) {
     // tslint:disable-next-line:forin
     for (const key in row) {
       if (!state.header.includes(key)) {
         state.header.push(key);
+      }
+      if (
+        !state.headerType[key] &&
+        !['object', 'undefined'].includes(typeof row[key]) // includes null
+      ) {
+        state.headerType[key] = typeof row[key];
       }
       if (typeof row[key] === 'object') {
         row[key] = JSON.stringify(row[key]);
@@ -121,6 +128,15 @@ function changeFilterValueType(state: RecordModuleState) {
       state.filterParams.filterValue =
         state.filterParams.filterValue === state.filterParams.filterValue;
       break;
+  }
+}
+
+function setFilterColumn(state: RecordModuleState, item: {value: string}) {
+  const key = item.value;
+  if (state.headerType[key]) {
+    // set data type and filter list
+    state.filterParams.valueType = state.headerType[key];
+    setFilterValueType(state, state.filterParams.valueType);
   }
 }
 
@@ -191,6 +207,7 @@ function initialState(state: RecordModuleState) {
   state.filtered = undefined;
   state.data = [];
   state.header = [];
+  state.headerType = {};
   state.evaluatedKeys = [];
   state.lastEvaluatedKeyIndex = 0;
   state.selectedRows = [];
@@ -200,7 +217,7 @@ function initialState(state: RecordModuleState) {
     filterValue: '',
     valueType: '',
     types: ['number', 'string', 'null', 'boolean'],
-    expressions: ['=', '!=', '<', '>', '<=', '>='],
+    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with'],
   };
 }
 
@@ -240,6 +257,7 @@ const mutations: MutationTree<RecordModuleState> = {
   lastEvaluatedKeyIndexDec,
   clearEvaluatedKeys,
   setLimit,
+  setFilterColumn,
   setFilterValueType,
   changeFilterValueType,
   setNotEqualExpr,

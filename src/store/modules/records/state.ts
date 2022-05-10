@@ -10,6 +10,7 @@ const state: RecordModuleState = {
   filtered: undefined,
   data: [],
   header: [],
+  headerType: {},
   limit: 15,
   lastEvaluatedKeyIndex: 0,
   evaluatedKeys: [],

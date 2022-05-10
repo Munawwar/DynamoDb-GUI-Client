@@ -2,7 +2,7 @@
   el-row(class="filters" type="flex")
     .scan-container
       .scan
-        el-autocomplete(:fetch-suggestions="getKeys" v-model="filterParams.filterColumn" placeholder="Key")
+        el-autocomplete(:fetch-suggestions="getKeys" v-model="filterParams.filterColumn" placeholder="Key" @select="setFilterColumn")
           el-button(v-if="filtered" type="danger" slot="prepend" plain icon="el-icon-close" title="Disable Filter" @click="refreshTable")
         el-select(v-model="filterParams.filterExpr" class="select" collapse-tags placeholder="Expression" @change="setNotEqualExpr")
           el-option(v-for="expression in filterParams.expressions" :key="expression" :label="expression" :value="expression") {{expression}}
@@ -25,6 +25,7 @@ import { State } from 'vuex-class';
 export default class RecordListFilter extends Vue {
   @Prop(Function) private getKeys: any;
   @Prop(Function) private filterRecords: any;
+  @Prop(Function) private setFilterColumn: any;
   @Prop(Function) private setFilterValueType: any;
   @Prop(Function) private setNotEqualExpr: any;
   @Prop(Function) private refreshTable: any;

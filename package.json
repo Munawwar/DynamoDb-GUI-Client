@@ -1,6 +1,6 @@
 {
   "name": "dynamodb-gui-client",
-  "version": "3.4.1",
+  "version": "3.4.2",
   "description": "DynamoDb-GUI-Client",
   "author": {
     "name": "Misak Poghosyan",
@@ -19,6 +19,7 @@
     "aws-sdk": "^2.432.0",
     "electron-default-menu": "^1.0.1",
     "element-ui": "^2.7.0",
+    "natural-sort-by-key": "^2.1.0",
     "vue": "^2.6.10",
     "vue-awesome": "^3.5.1",
     "vue-class-component": "^7.0.2",

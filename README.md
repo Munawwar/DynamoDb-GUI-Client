@@ -9,11 +9,11 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 
-### [Release v3.4.1](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.4.1)
+### [Release v3.4.2](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.4.2)
 
-#### [Download for MacOS (.dmg)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.1/DynamoDbGUI-mac-3.4.1.dmg)
+#### [Download for MacOS (.dmg)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.2/DynamoDbGUI-mac-3.4.2.dmg)
 
-#### [Download for MacOS (.zip)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.1/DynamoDbGUI-mac-3.4.1.zip)
+#### [Download for MacOS (.zip)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.4.2/DynamoDbGUI-mac-3.4.2.zip)
 
 ### [Release v2.1.1 || Old UI](https://github.com/Arattian/DynamoDb-GUI-Client/releases/tag/v2.1.1)
 

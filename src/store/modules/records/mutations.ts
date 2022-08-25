@@ -143,7 +143,7 @@ function setFilterColumn(state: RecordModuleState, item: {value: string}) {
 function setFilterValueType(state: RecordModuleState, valueType: string) {
   switch (valueType) {
     case 'string':
-      state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>=', 'begins_with'];
+      state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>=', 'begins_with', 'contains', 'not contains'];
       break;
     case 'number':
       state.filterParams.expressions = ['=', '!=', '<', '>', '<=', '>='];
@@ -217,7 +217,7 @@ function initialState(state: RecordModuleState) {
     filterValue: '',
     valueType: '',
     types: ['number', 'string', 'null', 'boolean'],
-    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with'],
+    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with', 'contains', 'not contains'],
   };
 }
 

@@ -23,7 +23,7 @@ const state: RecordModuleState = {
     filterValue: '',
     valueType: '',
     types: ['number', 'string', 'isNull', 'boolean'],
-    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with'],
+    expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with', 'contains', 'not contains'],
   },
 };
 

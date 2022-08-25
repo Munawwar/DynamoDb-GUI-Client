@@ -179,9 +179,11 @@ async function getRecords(
         ExclusiveStartKey: state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
         FilterExpression:
           state.filtered && (
-            state.filterParams.filterExpr == 'begins_with' ?
-              `begins_with(${state.filterParams.filterColumn}, :${state.filterParams.filterColumn}1)` :
-              `${state.filterParams.filterColumn} ${
+            /[a-z]/i.test((state.filterParams.filterExpr || '')[0])
+              // e.g. begins_with(path, value)
+              ? `${state.filterParams.filterExpr}(${state.filterParams.filterColumn}, :${state.filterParams.filterColumn}1)`
+              // e.g. path >= value
+              :`${state.filterParams.filterColumn} ${
                 state.filterParams.filterExpr
               } :${state.filterParams.filterColumn}1`
           ),

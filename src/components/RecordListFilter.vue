@@ -45,7 +45,7 @@ export default class RecordListFilter extends Vue {
   margin-left -1.5px
 
 .select
-  max-width 125px
+  max-width 160px
 
 .scan
   display flex

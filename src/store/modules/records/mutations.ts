@@ -197,9 +197,7 @@ function deleteItemFromList(state: RecordModuleState, deletedItem: any) {
 }
 
 function initialState(state: RecordModuleState) {
-  if (state.filterParams.filterColumn) {
-    state.limit = 15;
-  }
+  state.limit = 15;
   state.retry = 0;
   state.recordMeta = {};
   state.hashKey = '';

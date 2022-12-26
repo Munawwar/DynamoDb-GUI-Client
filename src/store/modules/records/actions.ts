@@ -181,15 +181,17 @@ async function getRecords(
           state.filtered && (
             /[a-z]/i.test((state.filterParams.filterExpr || '')[0])
               // e.g. begins_with(path, value)
-              ? `${state.filterParams.filterExpr}(${state.filterParams.filterColumn}, :${state.filterParams.filterColumn}1)`
+              ? `${state.filterParams.filterExpr}(#${state.filterParams.filterColumn}, :${state.filterParams.filterColumn})`
               // e.g. path >= value
-              :`${state.filterParams.filterColumn} ${
+              :`#${state.filterParams.filterColumn} ${
                 state.filterParams.filterExpr
-              } :${state.filterParams.filterColumn}1`
+              } :${state.filterParams.filterColumn}`
           ),
+        ExpressionAttributeNames: state.filtered && {
+          [`#${state.filterParams.filterColumn}`]: state.filterParams.filterColumn,
+        },
         ExpressionAttributeValues: state.filtered && {
-          [':' + state.filterParams.filterColumn + '1']: state.filterParams
-            .filterValue,
+          [`:${state.filterParams.filterColumn}`]: state.filterParams.filterValue,
         },
         ...params,
       })

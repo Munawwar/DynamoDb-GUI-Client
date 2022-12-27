@@ -7,7 +7,7 @@ export interface RecordModuleState {
   rangeKey: string;
   header: any[];
   headerType: {
-    [header: string]: string
+    [header: string]: string;
   };
   data: any[];
   filtered: true | undefined;

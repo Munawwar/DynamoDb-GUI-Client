@@ -14,13 +14,13 @@ const tableDataPage = (state: RecordModuleState) => state.data;
 
 const valueSorter = getNaturalKeySorter('value');
 
-const getKeys = (state: RecordModuleState) => (_: any, cb: any) => {
+const getKeys = (state: RecordModuleState) => (queryString: string | undefined, cb: any) => {
+  const searchString = (queryString || '').toLowerCase();
   return cb(
-    state.header.map((item) => {
-      return {
-        value: item,
-      };
-    }).sort(valueSorter),
+    state.header
+      .filter((item) => searchString ? item.toLowerCase().includes(searchString) : true)
+      .map((item) => ({ value: item }))
+      .sort(valueSorter),
   );
 };
 

@@ -183,7 +183,7 @@ async function getRecords(
               // e.g. begins_with(path, value)
               ? `${state.filterParams.filterExpr}(#${state.filterParams.filterColumn}, :${state.filterParams.filterColumn})`
               // e.g. path >= value
-              :`#${state.filterParams.filterColumn} ${
+              : `#${state.filterParams.filterColumn} ${
                 state.filterParams.filterExpr
               } :${state.filterParams.filterColumn}`
           ),

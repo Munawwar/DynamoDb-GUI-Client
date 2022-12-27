@@ -81,6 +81,9 @@ input[type='text']:disabled
 .Resizer
   z-index 1 !important
 
+.el-autocomplete-suggestion
+  width: auto !important
+
 .el-dialog__body
   z-index 10000 !important
 

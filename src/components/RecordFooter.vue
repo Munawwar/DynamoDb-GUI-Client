@@ -1,6 +1,6 @@
 <template lang="pug">
   el-col(:span="24" class="container")
-    el-col(:span="14")
+    el-col(:span="18")
       i(class="el-icon-circle-plus-outline add" @click="generateMeta" title="Add Record")
       i(class="el-icon-refresh refresh" @click="refreshTable" title="Refresh Table")
       el-popover(
@@ -13,7 +13,7 @@
             el-row(class="popover-row")
               el-input(placeholder="Row Count" @change="getLimitedRows" :disabled="checked" v-model="records.limit" spellcheck="false") rows
             el-row(class="popover-row")
-              el-checkbox(v-model="checked" @change="getLimitedRows(null)") No Limit
+              el-checkbox(v-model="checked" @change="getLimitedRows(checked ? null : 15)") No Limit
         el-row(class="popover-close")
           el-button(size="mini" plain type="primary" @click="visible = false") Close
         i(class="el-icon-setting settings" slot="reference" title="Table Settings")
@@ -70,12 +70,13 @@ export default class RecordFooter extends Vue {
   justify-content flex-end
 
 .container
-  position fixed
+  position absolute
   height 30px
   bottom 0
+  left 0
   background #121820
   z-index 1000
-  margin-left 2px
+  padding 0 2px
 
 .filter-result
   display flex

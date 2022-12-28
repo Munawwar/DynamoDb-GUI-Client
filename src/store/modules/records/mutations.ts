@@ -196,8 +196,10 @@ function deleteItemFromList(state: RecordModuleState, deletedItem: any) {
   });
 }
 
+export const INITIAL_LIMIT = 15;
+
 function initialState(state: RecordModuleState) {
-  state.limit = 15;
+  state.limit = INITIAL_LIMIT;
   state.retry = 0;
   state.recordMeta = {};
   state.hashKey = '';

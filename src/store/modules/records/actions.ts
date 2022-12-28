@@ -2,6 +2,7 @@ import { ActionTree, ActionContext } from 'vuex';
 import { RecordModuleState } from './types';
 import { RootState } from '@/store/types';
 import { ScanInput, PutItemInput, GetItemInput, DeleteItemInput } from 'aws-sdk/clients/dynamodb';
+import { INITIAL_LIMIT } from './mutations';
 
 /* Format to create 50 rows */
 // let Item;
@@ -237,7 +238,7 @@ async function getLimitedRows(
       { root: true },
     );
   } else {
-    commit('setLimit', limit);
+    commit('setLimit', (typeof limit === 'number' && limit <= 0) ? INITIAL_LIMIT : limit);
     commit('clearEvaluatedKeys');
     dispatch('getRecords');
   }

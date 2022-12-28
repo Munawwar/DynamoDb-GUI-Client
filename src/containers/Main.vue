@@ -10,7 +10,7 @@
       :setToDefault="setToDefault"
     )
     el-col(:span="24" v-if="currentTable")
-      el-tabs(v-if="currentTable" v-model="activeTab" type="card")
+      el-tabs(v-if="currentTable" v-model="activeTab" type="card" class="Main_el-tabs")
         el-tab-pane(label="Records" name="records")
           TableRecords
         el-tab-pane(label="Meta" name="meta")
@@ -62,6 +62,15 @@ export default class Main extends Vue {
   }
 }
 </script>
+
+<style lang="stylus">
+  .Main_el-tabs
+    height 100%
+    display flex
+    flex-direction column
+    .el-tabs__content
+      flex: 1;
+</style>
 
 <style lang="stylus" scoped>
 .main

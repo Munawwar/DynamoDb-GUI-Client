@@ -1,5 +1,5 @@
 <template lang="pug">
-  el-col(:span="24" class="main" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)")
+  el-col(:span="24" class="main" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)")  
     ConnectDatabase(
       v-if="!currentDb"
       :configs="database.submitForm.configs"
@@ -79,7 +79,4 @@ export default class Main extends Vue {
   height 100vh
   margin auto
   margin-left -2px
-
-.something
-  background red
 </style>

@@ -36,8 +36,6 @@ export default class App extends Vue {}
 </script>
 
 <style lang="stylus">
-@import url('https://fonts.googleapis.com/css?family=Roboto')
-
 *
   padding 0
   margin 0
@@ -65,6 +63,9 @@ html, body
 
 ::placeholder
   opacity .5
+
+th
+  font-weight 500
 
 [class^="el-"],.el-col,.el-row
   font-family 'Roboto', sans-serif

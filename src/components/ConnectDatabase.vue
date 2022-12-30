@@ -1,51 +1,53 @@
 <template lang="pug">
-  el-col(:span="24")
-    el-tabs(type="border-card" @tab-click="setToDefault")
-      el-tab-pane(label="Remote")
-        el-form(:model="configs")
-          el-form-item(label="Database Name (Optional)")
-            el-input(placeholder="Database display name" v-model="submitForm.name")
-              template(slot="append")
-                el-color-picker(v-model="submitForm.color" size="mini")
-          el-form-item(label="AWS region" required)
-            el-select(v-model="configs.region" placeholder="AWS Region")
-              el-option(v-for="(region, index) in regionList" :key="index" :label="region" :value="region")
-          el-form-item(label="Access Key Id" required)
-            el-input(v-model="configs.accessKeyId" placeholder="AWS access key id")
-          el-form-item(label="Secret Access Key"  @keyup.enter.native="submitRemoteForm" required)
-            el-input(v-model="configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
-              template(slot="append")
-                el-button(icon="el-icon-view" @click="showSecretKey")
-          el-form-item(label="Session Token (Optional)")
-            el-input(v-model="configs.sessionToken" placeholder="Session token")
-        ActionButtons(
-          :cancelHandler="setToDefault"
-          :confirmHandler="submitRemoteForm"
-          :confirmText="'Connect'"
-          :cancelText="'Clear'"
-        )
-      el-tab-pane(label="Local")
-        el-form(:model="configs")
-          el-form-item(label="Database Name (Optional)")
-            el-input(placeholder="Database display name" v-model="submitForm.name")
-              template(slot="append")
-                el-color-picker(v-model="submitForm.color" size="mini")
-          el-form-item(label="Local Database Endpoint" required)
-            el-input(placeholder="Enter Endpoint" @keyup.enter.native="submitLocalForm" v-model="submitForm.configs.endpoint")
-          el-form-item(label="AWS region" required)
-            el-input(v-model="submitForm.configs.region" placeholder="AWS Region" @keyup.enter.native="submitLocalForm")
-          el-form-item(label="Access Key Id" required)
-            el-input(v-model="submitForm.configs.accessKeyId" placeholder="AWS access key id")
-          el-form-item(label="Secret Access Key"  @keyup.enter.native="submitLocalForm" required)
-            el-input(v-model="submitForm.configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
-              template(slot="append")
-                el-button(icon="el-icon-view" @click="showSecretKey")
-        ActionButtons(
-          :cancelHandler="setToDefault"
-          :confirmHandler="submitLocalForm"
-          :confirmText="'Connect'"
-          :cancelText="'Clear'"
-        )
+  div
+    div(class="note") Privacy note: Credentials saves to local storage. All data is processed locally without involving servers. We don't track you. Code is <a href="https://github.com/Munawwar/DynamoDb-GUI-Client" target="_blank" rel="noopener">open source</a>.
+    el-col(:span="24")
+      el-tabs(type="border-card" @tab-click="setToDefault")
+        el-tab-pane(label="Remote")
+          el-form(:model="configs")
+            el-form-item(label="Database Name (Optional)")
+              el-input(placeholder="Database display name" v-model="submitForm.name")
+                template(slot="append")
+                  el-color-picker(v-model="submitForm.color" size="mini")
+            el-form-item(label="AWS region" required)
+              el-select(v-model="configs.region" placeholder="AWS Region")
+                el-option(v-for="(region, index) in regionList" :key="index" :label="region" :value="region")
+            el-form-item(label="Access Key Id" required)
+              el-input(v-model="configs.accessKeyId" placeholder="AWS access key id")
+            el-form-item(label="Secret Access Key"  @keyup.enter.native="submitRemoteForm" required)
+              el-input(v-model="configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
+                template(slot="append")
+                  el-button(icon="el-icon-view" @click="showSecretKey")
+            el-form-item(label="Session Token (Optional)")
+              el-input(v-model="configs.sessionToken" placeholder="Session token")
+          ActionButtons(
+            :cancelHandler="setToDefault"
+            :confirmHandler="submitRemoteForm"
+            :confirmText="'Connect'"
+            :cancelText="'Clear'"
+          )
+        el-tab-pane(label="Local")
+          el-form(:model="configs")
+            el-form-item(label="Database Name (Optional)")
+              el-input(placeholder="Database display name" v-model="submitForm.name")
+                template(slot="append")
+                  el-color-picker(v-model="submitForm.color" size="mini")
+            el-form-item(label="Local Database Endpoint" required)
+              el-input(placeholder="Enter Endpoint" @keyup.enter.native="submitLocalForm" v-model="submitForm.configs.endpoint")
+            el-form-item(label="AWS region" required)
+              el-input(v-model="submitForm.configs.region" placeholder="AWS Region" @keyup.enter.native="submitLocalForm")
+            el-form-item(label="Access Key Id" required)
+              el-input(v-model="submitForm.configs.accessKeyId" placeholder="AWS access key id")
+            el-form-item(label="Secret Access Key"  @keyup.enter.native="submitLocalForm" required)
+              el-input(v-model="submitForm.configs.secretAccessKey" :type="inputType" placeholder="AWS secret access key")
+                template(slot="append")
+                  el-button(icon="el-icon-view" @click="showSecretKey")
+          ActionButtons(
+            :cancelHandler="setToDefault"
+            :confirmHandler="submitLocalForm"
+            :confirmText="'Connect'"
+            :cancelText="'Clear'"
+          )
 </template>
 
 <script lang="ts">
@@ -83,6 +85,15 @@ export default class ConnectDatabase extends Vue {
 </script>
 
 <style lang="stylus" scoped>
+.note
+  width 80%
+  max-width: 700px;
+  margin 30px auto
+  text-align center
+
+a
+  color #00adff
+
 .el-col
   display flex
   justify-content center

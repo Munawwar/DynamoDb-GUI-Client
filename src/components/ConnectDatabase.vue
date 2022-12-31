@@ -26,7 +26,7 @@
             :confirmText="'Connect'"
             :cancelText="'Clear'"
           )
-        el-tab-pane(label="Local")
+        el-tab-pane(label="Local" v-if="isElectron()")
           el-form(:model="configs")
             el-form-item(label="Database Name (Optional)")
               el-input(placeholder="Database display name" v-model="submitForm.name")
@@ -80,6 +80,10 @@ export default class ConnectDatabase extends Vue {
     } else {
       this.inputType = 'password';
     }
+  }
+
+  isElectron() {
+    return window.navigator.userAgent.includes('Electron');
   }
 }
 </script>

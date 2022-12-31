@@ -16,7 +16,7 @@
     "test:unit": "vue-cli-service test:unit --coverage"
   },
   "dependencies": {
-    "aws-sdk": "^2.432.0",
+    "aws-sdk": "^2.1286.0",
     "electron-default-menu": "^1.0.1",
     "element-ui": "^2.7.0",
     "natural-sort-by-key": "^2.1.0",

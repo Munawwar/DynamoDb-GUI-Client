@@ -5,13 +5,15 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 
-## Cross-platform GUI client for DynamoDb
+## GUI client for DynamoDb
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 
 ### [Release v3.5.3](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.5.3)
 
 #### [Web Client](https://dynamodb.pages.dev)
+
+You can't connect to local Dynamodb mock servers (like LocalStack) with Web Client. Get the Mac app for that 👇
 
 #### [Download for MacOS (.dmg)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.5.3/DynamoDbGUI-mac-3.5.3.dmg)
 

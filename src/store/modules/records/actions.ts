@@ -173,11 +173,11 @@ async function getRecords(
   commit('loading', true, { root: true });
   let data;
   try {
-    data = await dbClient
-      .scan({
+    data = await (async function getPage(lastEvaluatedKey?: any): Promise<any> {
+      const result = await dbClient.scan({
         TableName: currentTable,
         Limit: state.limit,
-        ExclusiveStartKey: state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
+        ExclusiveStartKey: lastEvaluatedKey || state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
         FilterExpression:
           state.filtered && (
             /[a-z]/i.test((state.filterParams.filterExpr || '')[0])
@@ -199,6 +199,12 @@ async function getRecords(
         ...params,
       })
       .promise();
+      // If we get zero results then fetch next page till we get no more `LastEvaluatedKey`
+      if (!state.limit && !(result.Items || []).length && result.LastEvaluatedKey) {
+        return getPage(result.LastEvaluatedKey);
+      }
+      return result;
+    }());
   } catch (err) {
     commit('showResponse', err, { root: true });
     commit('loading', false, { root: true });

@@ -12,11 +12,11 @@
       )
       el-table-column(type="selection" width="50")
       el-table-column(type="index")
-      el-table-column(:prop="keys.hashKey" :show-overflow-tooltip="true" sortable=true)
+      el-table-column(:prop="keys.hashKey" :show-overflow-tooltip="true" :sort-method="(a, b) => compareByProp(a, b, keys.hashKey)" sortable=true)
         template(slot="header" slot-scope="slot" )
           span {{keys.hashKey}}
           i(class="el-icon-warning key")
-      el-table-column(:prop="keys.rangeKey" :show-overflow-tooltip="true" v-if="keys.rangeKey" sortable=true)
+      el-table-column(:prop="keys.rangeKey" :show-overflow-tooltip="true" :sort-method="(a, b) => compareByProp(a, b, keys.rangeKey)" v-if="keys.rangeKey" sortable=true)
         template(slot="header" slot-scope="slot")
           span {{keys.rangeKey}}
           i(class="el-icon-warning key")
@@ -24,6 +24,7 @@
         v-for="(header, index) of header"
         :show-overflow-tooltip="true"
         :prop="header"
+        :sort-method="(a, b) => compareByProp(a, b, header)"
         :label="header"
         :key="index"
         v-if="hideHashKey(header)"
@@ -49,9 +50,34 @@ export default class RecordList extends Vue {
   @Prop(Function) private showGroupDeleteModal: any;
   @Prop(Function) private handleRowSelection: any;
   @Prop(Array) private list!: any[];
-  @Prop(Number) private selectedItems!: any[];
+  @Prop(Number) private selectedItems!: number;
   @Prop(Array) private header!: any[];
   @Prop(Object) private keys!: { hashKey: string; rangeKey: string };
+
+  private compareByProp(a: any, b: any, prop: string) {
+    const normalize = (value: any) => {
+      if (value === undefined || value === null || value === '') {
+        return { empty: true, rank: 3, value: '' };
+      }
+      if (typeof value === 'boolean' || value === 'true' || value === 'false') {
+        return { empty: false, rank: 0, value: value === true || value === 'true' };
+      }
+      const numValue = Number(value);
+      if (typeof value !== 'object' && !Number.isNaN(numValue)) {
+        return { empty: false, rank: 1, value: numValue };
+      }
+      return { empty: false, rank: 2, value: String(value).toLowerCase() };
+    };
+    const left = normalize(a[prop]);
+    const right = normalize(b[prop]);
+    if (left.empty || right.empty) {
+      return left.empty === right.empty ? 0 : (left.empty ? 1 : -1);
+    }
+    if (left.rank === right.rank) {
+      return left.value > right.value ? 1 : (left.value < right.value ? -1 : 0);
+    }
+    return left.rank - right.rank;
+  }
 }
 </script>
 

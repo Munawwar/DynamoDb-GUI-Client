@@ -7,13 +7,13 @@
     "url": "https://github.com/Arattian"
   },
   "scripts": {
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
+    "build": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js build",
+    "lint": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js lint",
+    "electron:build": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js electron:build",
+    "electron:serve": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "start": "vue-cli-service serve --port 5050 --open",
-    "test:unit": "vue-cli-service test:unit --coverage"
+    "start": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js serve --port 5050 --open",
+    "test:unit": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit --coverage"
   },
   "dependencies": {
     "aws-sdk": "^2.1286.0",

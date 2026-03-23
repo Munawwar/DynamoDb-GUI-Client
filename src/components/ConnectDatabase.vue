@@ -71,6 +71,10 @@ export default class ConnectDatabase extends Vue {
   @Prop(Array) private regionList!: string[];
   @Prop(Object) private configs!: DbConfigs;
 
+  public isElectron() {
+    return window.navigator.userAgent.includes('Electron');
+  }
+
   private mounted() {
     this.setToDefault();
   }
@@ -80,10 +84,6 @@ export default class ConnectDatabase extends Vue {
     } else {
       this.inputType = 'password';
     }
-  }
-
-  isElectron() {
-    return window.navigator.userAgent.includes('Electron');
   }
 }
 </script>

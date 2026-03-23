@@ -125,8 +125,7 @@ function changeFilterValueType(state: RecordModuleState) {
       state.filterParams.filterValue = null;
       break;
     case 'boolean':
-      state.filterParams.filterValue =
-        state.filterParams.filterValue === state.filterParams.filterValue;
+      state.filterParams.filterValue = state.filterParams.filterValue === true;
       break;
   }
 }

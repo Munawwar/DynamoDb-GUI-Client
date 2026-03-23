@@ -29,15 +29,25 @@ const hideHashKey = (state: RecordModuleState) => (el: any) => {
 };
 
 const scanIsValid = (state: RecordModuleState) => {
-  for (const key in state.filterParams) {
-    if (
-      !(state.filterParams as any)[key] &&
-      state.filterParams.valueType !== 'null'
-    ) {
-      return false;
-    }
+  const {
+    filterColumn,
+    filterExpr,
+    filterValue,
+    valueType,
+  } = state.filterParams;
+  if (!filterColumn || !filterExpr || !valueType) {
+    return false;
   }
-  return true;
+  if (valueType === 'null') {
+    return true;
+  }
+  if (valueType === 'boolean') {
+    return typeof filterValue === 'boolean';
+  }
+  if (valueType === 'number') {
+    return filterValue !== '' && Number.isFinite(Number(filterValue));
+  }
+  return typeof filterValue === 'string' && filterValue !== '';
 };
 
 const itemCount = (_: RecordModuleState, __: any, rootState: any) =>

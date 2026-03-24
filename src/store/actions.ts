@@ -17,6 +17,7 @@ async function getCurrentDb(
     commit('showResponse', { message: 'Failed to decrypt database credentials.' });
     return;
   }
+  localStorage.setItem('__last_db', name);
   dispatch('getDbTables');
 }
 

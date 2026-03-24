@@ -43,7 +43,7 @@ async function setupMasterPassword(
 }
 
 async function unlockWithPassword(
-  { commit }: ActionContext<MasterPasswordState, RootState>,
+  { commit, dispatch }: ActionContext<MasterPasswordState, RootState>,
   password: string,
 ): Promise<boolean> {
   const salt = loadSalt();
@@ -53,6 +53,12 @@ async function unlockWithPassword(
   commit('setSalt', salt);
   commit('setPassword', password);
   commit('unlock');
+
+  const lastDb = localStorage.getItem('__last_db');
+  if (lastDb && localStorage.getItem(`${lastDb}-db`)) {
+    dispatch('getCurrentDb', lastDb, { root: true });
+  }
+
   return true;
 }
 
@@ -63,7 +69,7 @@ function forgotPassword(
   const keysToRemove: string[] = [];
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i)!;
-    if (key.endsWith('-db') || key === MP_SALT_KEY || key === MP_CHECK_KEY) {
+    if (key.endsWith('-db') || key === MP_SALT_KEY || key === MP_CHECK_KEY || key === '__last_db') {
       keysToRemove.push(key);
     }
   }

@@ -140,6 +140,7 @@ export default class MasterPasswordLock extends Vue {
   background #191d25
   border-radius 4px
   text-align center
+  font-family 'Roboto', sans-serif
 
 .lock-icon
   margin-bottom 20px

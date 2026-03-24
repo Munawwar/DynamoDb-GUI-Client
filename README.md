@@ -13,12 +13,6 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 #### [Web Client](https://dynamodb.pages.dev)
 
-You can't connect to local Dynamodb mock servers (like LocalStack) with Web Client. Get the Mac app for that 👇
-
-#### [Download for MacOS (.dmg)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.5.3/DynamoDbGUI-mac-3.5.3.dmg)
-
-#### [Download for MacOS (.zip)](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/download/v3.5.3/DynamoDbGUI-mac-3.5.3.zip)
-
 ![Logo](src/assets/git-logo.png)
 
 :eyes:
@@ -30,9 +24,6 @@ You can't connect to local Dynamodb mock servers (like LocalStack) with Web Clie
 git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
-# Electron serve
-npm run electron:serve
-# Vue Cli serve
 npm start
 ```
 
@@ -42,8 +33,7 @@ npm start
 git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
-# Electron application build(This will build app for your OS)
-npm run electron:build
+npm run build
 ```
 
 ## Features
@@ -51,6 +41,7 @@ npm run electron:build
 - [x] Remote Access of AWS DynamoDB Service\*
 - [x] Local DynamoDB
 - [x] Supports multiple databases
+- [x] Master password encryption for stored credentials
 - View
   - Table view
     - [x] Records view
@@ -68,7 +59,7 @@ npm run electron:build
   - Filter by attribute value
   - Filter by attribute name
 
-- For remote access, need to provide access and secret keys.All keys stored in localStorage.
+- For remote access, need to provide access and secret keys. All keys are encrypted and stored in localStorage.
 
 ## Contributors
 

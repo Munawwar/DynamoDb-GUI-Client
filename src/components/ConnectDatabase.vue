@@ -26,7 +26,7 @@
             :confirmText="'Connect'"
             :cancelText="'Clear'"
           )
-        el-tab-pane(label="Local" v-if="isElectron()")
+        el-tab-pane(label="Local")
           el-form(:model="configs")
             el-form-item(label="Database Name (Optional)")
               el-input(placeholder="Database display name" v-model="submitForm.name")
@@ -70,10 +70,6 @@ export default class ConnectDatabase extends Vue {
   @Prop(Object) private submitForm!: SubmitForm;
   @Prop(Array) private regionList!: string[];
   @Prop(Object) private configs!: DbConfigs;
-
-  public isElectron() {
-    return window.navigator.userAgent.includes('Electron');
-  }
 
   private mounted() {
     this.setToDefault();

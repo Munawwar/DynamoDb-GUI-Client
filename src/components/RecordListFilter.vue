@@ -69,8 +69,8 @@
         el-button(type="primary" plain icon="el-icon-plus" size="small" @click="addCondition") Add Condition
 
       span(slot="footer")
-        el-button(size="small" @click="showDialog = false") Cancel
-        el-button(type="success" size="small" icon="el-icon-search" @click="applyAdvancedFilter") Apply & Scan
+        el-button(@click="showDialog = false") Cancel
+        el-button(type="success" plain icon="el-icon-search" class="scan-button" @click="applyAdvancedFilter") Apply & Scan
 </template>
 
 <script lang="ts">

@@ -16,7 +16,7 @@ const state: RecordModuleState = {
   data: [],
   header: [],
   headerType: {},
-  limit: 15,
+  limit: 100,
   lastEvaluatedKeyIndex: 0,
   evaluatedKeys: [],
   selectedRows: [],
@@ -32,6 +32,11 @@ const state: RecordModuleState = {
   },
   advancedFilter: { ...initialAdvancedFilter, conditions: [...initialAdvancedFilter.conditions] },
   useAdvancedFilter: false,
+  paginationMode: 'server',
+  scanning: false,
+  scanGeneration: 0,
+  scanRowCount: 0,
+  bufferPageIndex: 0,
 };
 
 export default state;

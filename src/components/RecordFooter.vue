@@ -5,51 +5,67 @@
       i(class="el-icon-refresh refresh" @click="refreshTable" title="Refresh Table")
       el-popover(
         placement="top"
-        width="200"
+        width="280"
         v-model="visible")
         .popover-content
+          i(class="el-icon-close popover-close-icon" role="button" aria-label="Close settings" @click="visible = false")
           el-row
-            el-row(class="popover-row") Maximum rows in table
+            el-row(class="popover-row popover-label") Pagination
             el-row(class="popover-row")
-              el-input(placeholder="Row Count" @change="getLimitedRows" :disabled="checked" v-model="records.limit" spellcheck="false") rows
+              el-radio-group(v-model="records.paginationMode" size="small" @change="onPaginationModeChange")
+                el-radio-button(label="server") Server-side
+                el-radio-button(label="client")
+                  span Client-side
+                  el-tooltip(content="Scans entire table and paginates locally" placement="top")
+                    i(class="el-icon-warning warning-icon")
+            el-row(class="popover-row popover-label") {{ records.paginationMode === 'server' ? 'Scan rows per page' : 'Rows per page' }}
             el-row(class="popover-row")
-              el-checkbox(v-model="checked" @change="getLimitedRows(checked ? null : 15)") No Limit
-        el-row(class="popover-close")
-          el-button(size="mini" plain type="primary" @click="visible = false") Close
+              el-input(placeholder="Row Count" @change="onRowsPerPageChange" v-model="records.limit" spellcheck="false")
         i(class="el-icon-setting settings" slot="reference" title="Table Settings")
-      i(
-        class="el-icon-arrow-left"
-        :class="{disabled: records.lastEvaluatedKeyIndex < 1}"
-        @click="records.lastEvaluatedKeyIndex >= 1 && getPreviousRecords()"
-        )
-      .pageIndex(
-      ) {{ records.lastEvaluatedKeyIndex + 1 }}
-      i(
-        class="el-icon-arrow-right"
-        :class="{disabled: (records.lastEvaluatedKeyIndex + 1) * records.limit >= itemCount || records.evaluatedKeys.length < 1}"
-        @click="(records.lastEvaluatedKeyIndex + 1) * records.limit < itemCount && records.evaluatedKeys.length > 0 && getNextRecords()"
-        )
-      .filter-result(v-if="records.filtered") {{list.length}} matches in {{ records.limit * records.lastEvaluatedKeyIndex + 1 }} - {{ (records.lastEvaluatedKeyIndex + 1) * records.limit > itemCount ? itemCount : (records.lastEvaluatedKeyIndex + 1) * records.limit}} range
+      template(v-if="records.scanning")
+        span.scan-status Scanning... ({{ records.scanRowCount }} rows)
+        el-button(type="danger" size="mini" plain @click="cancelScan") Cancel
+      template(v-else-if="hasBuffer")
+        i(
+          class="el-icon-arrow-left"
+          :class="{disabled: records.bufferPageIndex < 1}"
+          @click="records.bufferPageIndex >= 1 && bufferPagePrev()"
+          )
+        .pageIndex {{ records.bufferPageIndex + 1 }} / {{ bufferTotalPages }}
+        i(
+          class="el-icon-arrow-right"
+          :class="{disabled: records.bufferPageIndex >= bufferTotalPages - 1}"
+          @click="records.bufferPageIndex < bufferTotalPages - 1 && bufferPageNext()"
+          )
+        span.scan-status {{ records.scanRowCount }} rows total
+      template(v-else)
+        i(
+          class="el-icon-arrow-left"
+          :class="{disabled: records.lastEvaluatedKeyIndex < 1}"
+          @click="records.lastEvaluatedKeyIndex >= 1 && getPreviousRecords()"
+          )
+        .pageIndex(
+        ) {{ records.lastEvaluatedKeyIndex + 1 }}
+        i(
+          class="el-icon-arrow-right"
+          :class="{disabled: (records.lastEvaluatedKeyIndex + 1) * records.limit >= itemCount || records.evaluatedKeys.length < 1}"
+          @click="(records.lastEvaluatedKeyIndex + 1) * records.limit < itemCount && records.evaluatedKeys.length > 0 && getNextRecords()"
+          )
+        .filter-result(v-if="records.filtered") {{list.length}} matches in {{ records.limit * records.lastEvaluatedKeyIndex + 1 }} - {{ (records.lastEvaluatedKeyIndex + 1) * records.limit > itemCount ? itemCount : (records.lastEvaluatedKeyIndex + 1) * records.limit}} range
     el-col(:span="6" class="itemCount") {{itemCount ? itemCount : 0}} rows in {{currentTable}}
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
-import { Getter, Action, Mutation } from 'vuex-class';
-
-const namespace = 'records';
 
 @Component
 export default class RecordFooter extends Vue {
   private visible: boolean = false;
-  private checked: boolean = false;
 
-  get watchLimit() { return this.records.limit; }
+  get hasBuffer() { return !this.records.scanning && this.records.scanRowCount > 0; }
 
-  private created() {
-    this.$watch('watchLimit', (val: any) => {
-      this.checked = !val;
-    });
+  get bufferTotalPages() {
+    return Math.ceil(this.records.scanRowCount / (this.records.limit || 500)) || 1;
   }
 
   @Prop(Function) private generateMeta: any;
@@ -58,25 +74,56 @@ export default class RecordFooter extends Vue {
   @Prop(Object) private records!: any;
   @Prop(Function) private getPreviousRecords: any;
   @Prop(Function) private getLimitedRows: any;
+  @Prop(Function) private cancelScan: any;
+  @Prop(Function) private bufferPageNext: any;
+  @Prop(Function) private bufferPagePrev: any;
+  @Prop(Function) private setPaginationMode: any;
   @Prop(String) private currentTable!: string;
   @Prop(Number) private itemCount!: number;
   @Prop(Array) private list!: any[];
+
+  private onPaginationModeChange(mode: string) {
+    this.setPaginationMode(mode);
+    this.getLimitedRows(this.records.limit || 100);
+  }
+
+  private onRowsPerPageChange(val: any) {
+    this.getLimitedRows(val);
+  }
 }
 </script>
 
 <style lang="stylus" scoped>
 .popover-content
+  position relative
   display flex
   justify-content center
   align-items center
   flex-direction column
+  padding-bottom 10px
+
+.popover-close-icon
+  position absolute
+  top -5px
+  right -5px
+  cursor pointer
+  color #999
+  font-size 14px
+  padding 4px !important
+  &:hover
+    color #fff
 
 .popover-row
   margin-top 10px
 
-.popover-close
-  display flex
-  justify-content flex-end
+.popover-label
+  color #aaa
+  font-size 12px
+
+.warning-icon
+  color #e6a23c
+  margin-left 4px
+  font-size 14px
 
 .container
   position absolute
@@ -124,4 +171,9 @@ export default class RecordFooter extends Vue {
 .disabled
   color #aaaaaa
   cursor not-allowed !important
+
+.scan-status
+  color #e6e6e6
+  font-size 13px
+  padding 0 10px
 </style>

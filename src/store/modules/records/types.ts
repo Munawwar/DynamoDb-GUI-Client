@@ -20,6 +20,11 @@ export interface RecordModuleState {
   filterParams: FilterParams;
   advancedFilter: AdvancedFilter;
   useAdvancedFilter: boolean;
+  paginationMode: 'server' | 'client';
+  scanning: boolean;
+  scanGeneration: number;
+  scanRowCount: number;
+  bufferPageIndex: number;
 }
 
 export interface FilterParams {

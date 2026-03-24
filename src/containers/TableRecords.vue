@@ -27,6 +27,7 @@
       :showGroupDeleteModal="toggleGroupDeleteModal"
       :handleRowSelection="selectRows"
       :selectedItems="records.selectedRows.length"
+      :indexOffset="records.bufferPageIndex * (records.limit || 500)"
       size="mini"
     )
     RecordFooter(
@@ -38,6 +39,10 @@
       :records="records"
       :getPreviousRecords="getPreviousRecords"
       :getNextRecords="getNextRecords"
+      :cancelScan="cancelScan"
+      :bufferPageNext="bufferPageNext"
+      :bufferPagePrev="bufferPagePrev"
+      :setPaginationMode="setPaginationMode"
       :list="tableDataPage"
     )
 </template>
@@ -91,6 +96,10 @@ export default class TableRecords extends Vue {
   @Mutation('addFilterCondition', { namespace }) private addFilterCondition: any;
   @Mutation('removeFilterCondition', { namespace }) private removeFilterCondition: any;
   @Mutation('resetAdvancedFilter', { namespace }) private resetAdvancedFilter: any;
+  @Mutation('cancelScan', { namespace }) private cancelScan: any;
+  @Mutation('bufferPageNext', { namespace }) private bufferPageNext: any;
+  @Mutation('bufferPagePrev', { namespace }) private bufferPagePrev: any;
+  @Mutation('setPaginationMode', { namespace }) private setPaginationMode: any;
   @Mutation('selectRows', { namespace }) private selectRows: any;
 
   private showDeleteModal(row: any) {

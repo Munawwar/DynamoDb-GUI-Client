@@ -171,7 +171,8 @@ async function getRecords(
 ) {
   const { dbClient } = rootState;
   const { currentTable } = rootState;
-  commit('loading', true, { root: true });
+  const isClientPagination = state.paginationMode === 'client';
+  !isClientPagination && commit('loading', true, { root: true });
   let filterResult: any = {};
   if (state.filtered) {
     if (state.useAdvancedFilter) {
@@ -188,33 +189,69 @@ async function getRecords(
     }
   }
 
-  let data;
+  commit('startScan');
+  const myGeneration = state.scanGeneration;
+
+  if (isClientPagination) {
+    commit('setData', []);
+  }
+
+  let lastEvaluatedKey = state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1];
+  let firstPage = true;
+
   try {
-    data = await (async function getPage(lastEvaluatedKey?: any): Promise<any> {
+    while (true) {
+      if (state.scanGeneration !== myGeneration) {
+        if (isClientPagination) { commit('flushScanBuffer'); }
+        !state.scanning && commit('loading', false, { root: true });
+        return;
+      }
+
       const result = await dbClient.scan({
         TableName: currentTable,
-        Limit: state.limit,
-        ExclusiveStartKey: lastEvaluatedKey || state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
+        Limit: isClientPagination ? undefined : state.limit,
+        ExclusiveStartKey: lastEvaluatedKey,
         ...(state.filtered ? filterResult : {}),
         ...params,
-      })
-      .promise();
-      // If we get zero results then fetch next page till we get no more `LastEvaluatedKey`
-      if (!state.limit && !(result.Items || []).length && result.LastEvaluatedKey) {
-        return getPage(result.LastEvaluatedKey);
+      }).promise();
+
+      if (state.scanGeneration !== myGeneration) {
+        if (isClientPagination) { commit('flushScanBuffer'); }
+        !state.scanning && commit('loading', false, { root: true });
+        return;
       }
-      return result;
-    }());
+
+      if (isClientPagination) {
+        if ((result.Items || []).length) {
+          commit('appendData', result.Items);
+        }
+        if (!result.LastEvaluatedKey) { break; }
+        lastEvaluatedKey = result.LastEvaluatedKey;
+        // Yield to the UI so it can paint and handle clicks (e.g. Cancel)
+        await new Promise((r) => requestAnimationFrame(r));
+      } else {
+        if (firstPage && !(result.Items || []).length && result.LastEvaluatedKey) {
+          lastEvaluatedKey = result.LastEvaluatedKey;
+          firstPage = false;
+          continue;
+        }
+        commit('setData', result.Items);
+        commit('setHeader');
+        result.LastEvaluatedKey && commit('addEvaluatedKey', result.LastEvaluatedKey);
+        break;
+      }
+    }
   } catch (err) {
+    if (isClientPagination) { commit('flushScanBuffer'); }
     commit('showResponse', err, { root: true });
     commit('loading', false, { root: true });
+    commit('finishScan');
     return;
   }
-  commit('setData', data.Items);
-  commit('setHeader');
+  if (isClientPagination) { commit('flushScanBuffer'); }
+  commit('finishScan');
   commit('loading', false, { root: true });
   dispatch('table/getMeta', null, { root: true });
-  data.LastEvaluatedKey && commit('addEvaluatedKey', data.LastEvaluatedKey);
 }
 
 async function filterRecords({
@@ -266,8 +303,12 @@ async function getLimitedRows(
     );
   } else {
     commit('setLimit', (typeof limit === 'number' && limit <= 0) ? INITIAL_LIMIT : limit);
-    commit('clearEvaluatedKeys');
-    dispatch('getRecords');
+    if (state.paginationMode === 'client' && state.scanRowCount > 0) {
+      commit('flushScanBuffer');
+    } else {
+      commit('clearEvaluatedKeys');
+      dispatch('getRecords');
+    }
   }
 }
 

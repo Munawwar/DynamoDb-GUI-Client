@@ -11,7 +11,7 @@
       :height="'100%'"
       )
       el-table-column(type="selection" width="50")
-      el-table-column(type="index")
+      el-table-column(type="index" :index="indexMethod")
       el-table-column(:prop="keys.hashKey" :show-overflow-tooltip="true" :sort-method="(a, b) => compareByProp(a, b, keys.hashKey)" sortable=true)
         template(slot="header" slot-scope="slot" )
           span {{keys.hashKey}}
@@ -53,6 +53,11 @@ export default class RecordList extends Vue {
   @Prop(Number) private selectedItems!: number;
   @Prop(Array) private header!: any[];
   @Prop(Object) private keys!: { hashKey: string; rangeKey: string };
+  @Prop({ type: Number, default: 0 }) private indexOffset!: number;
+
+  private indexMethod(index: number) {
+    return index + this.indexOffset + 1;
+  }
 
   private compareByProp(a: any, b: any, prop: string) {
     const normalize = (value: any) => {

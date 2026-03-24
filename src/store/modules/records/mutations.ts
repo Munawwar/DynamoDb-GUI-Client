@@ -2,6 +2,11 @@ import { MutationTree } from 'vuex';
 import { RecordModuleState, FilterCondition, LogicalOperator } from './types';
 import { initialAdvancedFilter } from './state';
 
+// Non-reactive buffers to avoid Vue 2 observer overhead during scanning
+let scanBufferRaw: any[] = [];
+let scanHeaderSet: Set<string> = new Set();
+let scanHeaderType: { [key: string]: string } = {};
+
 function toggleCreateModal(state: RecordModuleState) {
   state.showCreateModal = !state.showCreateModal;
 }
@@ -112,6 +117,15 @@ function setLimit(state: RecordModuleState, limit: any) {
   state.limit = limit && Number(limit);
 }
 
+function setPaginationMode(state: RecordModuleState, mode: 'server' | 'client') {
+  state.paginationMode = mode;
+  if (mode === 'server') {
+    scanBufferRaw = [];
+    state.scanRowCount = 0;
+    state.bufferPageIndex = 0;
+  }
+}
+
 function changeFilterValueType(state: RecordModuleState) {
   switch (state.filterParams.valueType) {
     case 'string':
@@ -207,6 +221,82 @@ function resetAdvancedFilter(state: RecordModuleState) {
   state.useAdvancedFilter = false;
 }
 
+function startScan(state: RecordModuleState) {
+  state.scanGeneration++;
+  state.scanning = true;
+  scanBufferRaw = [];
+  scanHeaderSet = new Set();
+  scanHeaderType = {};
+  state.scanRowCount = 0;
+}
+
+function cancelScan(state: RecordModuleState) {
+  state.scanGeneration++;
+  state.scanning = false;
+}
+
+function finishScan(state: RecordModuleState) {
+  state.scanning = false;
+}
+
+function appendData(state: RecordModuleState, items: any[]) {
+  // All work here is on non-reactive data — only scanRowCount triggers Vue
+  for (const row of items) {
+    for (const key in row) {
+      scanHeaderSet.add(key);
+      if (
+        !scanHeaderType[key] &&
+        !['object', 'undefined'].includes(typeof row[key])
+      ) {
+        scanHeaderType[key] = typeof row[key];
+      }
+      if (typeof row[key] === 'object') {
+        row[key] = JSON.stringify(row[key]);
+      } else if (
+        typeof row[key] === 'boolean' ||
+        typeof row[key] === 'undefined'
+      ) {
+        row[key] += '';
+      }
+    }
+    scanBufferRaw.push(row);
+  }
+  state.scanRowCount = scanBufferRaw.length;
+}
+
+export const CLIENT_PAGE_SIZE_DEFAULT = 500;
+
+function getClientPageSize(state: RecordModuleState): number {
+  return state.limit || CLIENT_PAGE_SIZE_DEFAULT;
+}
+
+function flushScanBuffer(state: RecordModuleState) {
+  state.bufferPageIndex = 0;
+  state.header = Array.from(scanHeaderSet);
+  state.headerType = { ...scanHeaderType };
+  const pageSize = getClientPageSize(state);
+  state.data = scanBufferRaw.slice(0, pageSize);
+}
+
+function bufferPageNext(state: RecordModuleState) {
+  const pageSize = getClientPageSize(state);
+  const maxPage = Math.ceil(scanBufferRaw.length / pageSize) - 1;
+  if (state.bufferPageIndex < maxPage) {
+    state.bufferPageIndex++;
+    const start = state.bufferPageIndex * pageSize;
+    state.data = scanBufferRaw.slice(start, start + pageSize);
+  }
+}
+
+function bufferPagePrev(state: RecordModuleState) {
+  const pageSize = getClientPageSize(state);
+  if (state.bufferPageIndex > 0) {
+    state.bufferPageIndex--;
+    const start = state.bufferPageIndex * pageSize;
+    state.data = scanBufferRaw.slice(start, start + pageSize);
+  }
+}
+
 function addItemToList(state: RecordModuleState, newItem: any) {
   let edited = false;
   state.data = state.data.map((item) => {
@@ -232,7 +322,7 @@ function deleteItemFromList(state: RecordModuleState, deletedItem: any) {
   });
 }
 
-export const INITIAL_LIMIT = 15;
+export const INITIAL_LIMIT = 100;
 
 function initialState(state: RecordModuleState) {
   state.limit = INITIAL_LIMIT;
@@ -260,6 +350,14 @@ function initialState(state: RecordModuleState) {
     conditions: [{ column: '', expr: '=', value: '', valueType: '' }],
   };
   state.useAdvancedFilter = false;
+  state.paginationMode = 'server';
+  state.scanning = false;
+  state.scanGeneration++;
+  scanBufferRaw = [];
+  scanHeaderSet = new Set();
+  scanHeaderType = {};
+  state.scanRowCount = 0;
+  state.bufferPageIndex = 0;
 }
 
 function addEvaluatedKey(state: RecordModuleState, lastEvaluatedKey: any) {
@@ -310,6 +408,14 @@ const mutations: MutationTree<RecordModuleState> = {
   removeFilterCondition,
   updateFilterCondition,
   resetAdvancedFilter,
+  startScan,
+  cancelScan,
+  finishScan,
+  appendData,
+  flushScanBuffer,
+  bufferPageNext,
+  bufferPagePrev,
+  setPaginationMode,
 };
 
 export default mutations;

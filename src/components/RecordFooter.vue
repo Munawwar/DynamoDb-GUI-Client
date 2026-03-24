@@ -43,6 +43,15 @@ const namespace = 'records';
 export default class RecordFooter extends Vue {
   private visible: boolean = false;
   private checked: boolean = false;
+
+  get watchLimit() { return this.records.limit; }
+
+  private created() {
+    this.$watch('watchLimit', (val: any) => {
+      this.checked = !val;
+    });
+  }
+
   @Prop(Function) private generateMeta: any;
   @Prop(Function) private refreshTable: any;
   @Prop(Function) private getNextRecords: any;

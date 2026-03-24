@@ -5,7 +5,7 @@
       i(class="el-icon-refresh refresh" @click="refreshTable" title="Refresh Table")
       el-popover(
         placement="top"
-        width="280"
+        width="260"
         v-model="visible")
         .popover-content
           i(class="el-icon-close popover-close-icon" role="button" aria-label="Close settings" @click="visible = false")
@@ -100,12 +100,11 @@ export default class RecordFooter extends Vue {
   justify-content center
   align-items center
   flex-direction column
-  padding-bottom 10px
 
 .popover-close-icon
   position absolute
-  top -5px
-  right -5px
+  top -10px
+  right -10px
   cursor pointer
   color #999
   font-size 14px
@@ -114,7 +113,9 @@ export default class RecordFooter extends Vue {
     color #fff
 
 .popover-row
-  margin-top 10px
+  margin-top 8px
+  &:first-child
+    margin-top 0
 
 .popover-label
   color #aaa

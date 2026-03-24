@@ -1,11 +1,22 @@
 import { ActionContext, ActionTree } from 'vuex';
 import { RootState } from './types';
+import { decrypt } from '@/utils/crypto';
 
 async function getCurrentDb(
-  { commit, dispatch }: ActionContext<RootState, RootState>,
+  { commit, dispatch, rootState }: ActionContext<RootState, RootState>,
   name: string,
 ) {
-  commit('setDBInstances', name);
+  const mp = (rootState as any).masterPassword;
+  const raw = localStorage.getItem(`${name}-db`);
+  if (!raw) { return; }
+  try {
+    const decrypted = await decrypt(raw, mp.password, mp.salt);
+    const database = JSON.parse(decrypted);
+    commit('setDBInstancesFromData', database);
+  } catch {
+    commit('showResponse', { message: 'Failed to decrypt database credentials.' });
+    return;
+  }
   dispatch('getDbTables');
 }
 

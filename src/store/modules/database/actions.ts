@@ -2,9 +2,17 @@ import { ActionTree, ActionContext } from 'vuex';
 import { DatabaseModuleState } from './types';
 import { RootState } from '@/store/types';
 import DynamoDB from 'aws-sdk/clients/dynamodb';
+import { encrypt, decrypt, MP_SALT_KEY, MP_CHECK_KEY } from '@/utils/crypto';
+
+function getMasterPassword(rootState: any): { password: string; salt: ArrayBuffer } {
+  return {
+    password: rootState.masterPassword.password,
+    salt: rootState.masterPassword.salt,
+  };
+}
 
 function removeDbFromStorage(
-  { commit, dispatch }: ActionContext<DatabaseModuleState, RootState>,
+  { commit, dispatch, rootState }: ActionContext<DatabaseModuleState, RootState>,
   db: any,
 ) {
   localStorage.removeItem(`${db.name}-db`);
@@ -24,8 +32,11 @@ async function setCredentials({
     return;
   }
   // In case of editing remove existing db first
-  localStorage.removeItem(`${rootState.currentDb}-db`);
-  if (localStorage.getItem(`${database.name}-db`)) {
+  localStorage.removeItem(`${(rootState as any).currentDb}-db`);
+
+  // Check for duplicate by trying to read existing entry
+  const existingRaw = localStorage.getItem(`${database.name}-db`);
+  if (existingRaw) {
     commit(
       'showResponse',
       { message: 'Database with that name already exists' },
@@ -33,6 +44,7 @@ async function setCredentials({
     );
     return;
   }
+
   const DB = new DynamoDB({ ...database.configs });
   try {
     await DB.listTables().promise();
@@ -41,10 +53,32 @@ async function setCredentials({
     return;
   }
   database.createdAt = +new Date();
-  localStorage.setItem(`${database.name}-db`, JSON.stringify(database));
+
+  const { password, salt } = getMasterPassword(rootState);
+  const encrypted = await encrypt(JSON.stringify(database), password, salt);
+  localStorage.setItem(`${database.name}-db`, encrypted);
+
   dispatch('getDbList');
   dispatch('getCurrentDb', database.name, { root: true });
   commit('setToDefault');
+}
+
+async function getDbList({ commit, rootState }: ActionContext<DatabaseModuleState, RootState>) {
+  const { password, salt } = getMasterPassword(rootState);
+  const newDbList = [];
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i)!;
+    if (!key.endsWith('-db')) { continue; }
+    const value = localStorage.getItem(key)!;
+    try {
+      const decrypted = await decrypt(value, password, salt);
+      newDbList.push(JSON.parse(decrypted));
+    } catch {
+      continue;
+    }
+  }
+  newDbList.sort((a, b) => a.createdAt - b.createdAt);
+  commit('setDbList', newDbList);
 }
 
 function submitRemoteForm({
@@ -63,18 +97,20 @@ function submitLocalForm({
   dispatch('setCredentials');
 }
 
-function getDbList({ commit }: ActionContext<DatabaseModuleState, RootState>) {
-  const newDbList = [];
-  for (let i = 0; i < localStorage.length; i++) {
-    try {
-      JSON.parse(Object.values(localStorage)[i]);
-    } catch (err) {
-      continue;
-    }
-    newDbList.push(JSON.parse(Object.values(localStorage)[i]));
+async function fillEditForm(
+  { commit, rootState }: ActionContext<DatabaseModuleState, RootState>,
+  name: string,
+) {
+  const { password, salt } = getMasterPassword(rootState);
+  const raw = localStorage.getItem(`${name}-db`);
+  if (!raw) { return; }
+  try {
+    const decrypted = await decrypt(raw, password, salt);
+    const database = JSON.parse(decrypted);
+    commit('fillEditFormFromData', database);
+  } catch {
+    commit('showResponse', { message: 'Failed to decrypt database entry.' }, { root: true });
   }
-  newDbList.sort((a, b) => a.createdAt - b.createdAt);
-  commit('setDbList', newDbList);
 }
 
 const actions: ActionTree<DatabaseModuleState, RootState> = {
@@ -83,6 +119,7 @@ const actions: ActionTree<DatabaseModuleState, RootState> = {
   submitRemoteForm,
   submitLocalForm,
   getDbList,
+  fillEditForm,
 };
 
 export default actions;

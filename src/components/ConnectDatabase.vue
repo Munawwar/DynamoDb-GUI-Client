@@ -1,6 +1,6 @@
 <template lang="pug">
   div
-    div(class="note") Privacy note: Credentials saves to local storage. All data is processed locally without involving servers. We don't track you. Code is <a href="https://github.com/Munawwar/DynamoDb-GUI-Client" target="_blank" rel="noopener">open source</a>.
+    div(class="note") Privacy note: Credentials are encrypted with your master key and saved to local storage. All data is processed locally. We don't track you. Code is <a href="https://github.com/Munawwar/DynamoDb-GUI-Client" target="_blank" rel="noopener">open source</a>.
     el-col(:span="24")
       el-tabs(type="border-card" @tab-click="setToDefault")
         el-tab-pane(label="Remote")

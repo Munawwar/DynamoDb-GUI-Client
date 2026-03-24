@@ -44,9 +44,7 @@ function notified(state: RootState) {
   };
 }
 
-function setDBInstances(state: RootState, name: any) {
-  const databaseJson: any = localStorage.getItem(`${name}-db`);
-  const database = JSON.parse(databaseJson);
+function setDBInstancesFromData(state: RootState, database: any) {
   state.dbInstance = new DynamoDB(database.configs);
   state.dbClient = new DynamoDB.DocumentClient(database.configs);
   state.currentDb = database.name;
@@ -92,7 +90,7 @@ function filterTextChange(state: RootState, filterField: any) {
 const mutations: MutationTree<RootState> = {
   initialState,
   showResponse,
-  setDBInstances,
+  setDBInstancesFromData,
   removeDbFromState,
   setTableNames,
   deleteFromList,

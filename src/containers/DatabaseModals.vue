@@ -26,7 +26,7 @@ export default class DatabaseModals extends Vue {
   @Getter private currentDb!: string;
   @State(namespace) private database!: any;
   @Mutation('toggleEditModal', { namespace }) private toggleEditModal!: any;
-  @Mutation('fillEditForm', { namespace }) private fillEditForm!: any;
+  @Action('fillEditForm', { namespace }) private fillEditForm!: any;
   @Action('submitRemoteForm', { namespace }) private submitRemoteForm!: any;
   @Action('submitLocalForm', { namespace }) private submitLocalForm!: any;
 }

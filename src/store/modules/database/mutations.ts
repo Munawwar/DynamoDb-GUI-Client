@@ -53,9 +53,7 @@ function toggleEditModal(state: DatabaseModuleState) {
   state.showEditModal = !state.showEditModal;
 }
 
-function fillEditForm(state: DatabaseModuleState, name: string) {
-  const databaseJson: any = localStorage.getItem(`${name}-db`);
-  const database = JSON.parse(databaseJson);
+function fillEditFormFromData(state: DatabaseModuleState, database: any) {
   state.submitForm = Object.assign({}, state.submitForm, database);
 }
 
@@ -64,6 +62,6 @@ const mutations: MutationTree<DatabaseModuleState> = {
   setToDefault,
   setDbList,
   toggleEditModal,
-  fillEditForm,
+  fillEditFormFromData,
 };
 export default mutations;

@@ -3,6 +3,7 @@ import { RecordModuleState } from './types';
 import { RootState } from '@/store/types';
 import { ScanInput, PutItemInput, GetItemInput, DeleteItemInput } from 'aws-sdk/clients/dynamodb';
 import { INITIAL_LIMIT } from './mutations';
+import { buildFilterExpression, buildLegacyFilter } from './filterExpression';
 
 /* Format to create 50 rows */
 // let Item;
@@ -171,6 +172,22 @@ async function getRecords(
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   commit('loading', true, { root: true });
+  let filterResult: any = {};
+  if (state.filtered) {
+    if (state.useAdvancedFilter) {
+      filterResult = buildFilterExpression(
+        state.advancedFilter.conditions,
+        state.advancedFilter.logicalOperator,
+      ) || {};
+    } else {
+      filterResult = buildLegacyFilter(
+        state.filterParams.filterColumn,
+        state.filterParams.filterExpr,
+        state.filterParams.filterValue,
+      );
+    }
+  }
+
   let data;
   try {
     data = await (async function getPage(lastEvaluatedKey?: any): Promise<any> {
@@ -178,24 +195,7 @@ async function getRecords(
         TableName: currentTable,
         Limit: state.limit,
         ExclusiveStartKey: lastEvaluatedKey || state.evaluatedKeys[state.lastEvaluatedKeyIndex - 1],
-        FilterExpression:
-          state.filtered && (
-            /[a-z]/i.test((state.filterParams.filterExpr || '')[0])
-              // e.g. begins_with(path, value)
-              ? `${state.filterParams.filterExpr}(#${
-                state.filterParams.filterColumn
-              }, :${state.filterParams.filterColumn})`
-              // e.g. path >= value
-              : `#${state.filterParams.filterColumn} ${
-                state.filterParams.filterExpr
-              } :${state.filterParams.filterColumn}`
-          ),
-        ExpressionAttributeNames: state.filtered && {
-          [`#${state.filterParams.filterColumn}`]: state.filterParams.filterColumn,
-        },
-        ExpressionAttributeValues: state.filtered && {
-          [`:${state.filterParams.filterColumn}`]: state.filterParams.filterValue,
-        },
+        ...(state.filtered ? filterResult : {}),
         ...params,
       })
       .promise();
@@ -235,6 +235,25 @@ async function filterRecords({
   commit('setFilterStatus');
   dispatch('getRecords');
 }
+async function filterAdvancedRecords({
+  dispatch,
+  getters,
+  commit,
+}: ActionContext<RecordModuleState, RootState>) {
+  if (!getters.advancedScanIsValid) {
+    commit(
+      'showResponse',
+      { message: 'Please fill all scan fields in every condition.' },
+      { root: true },
+    );
+    return;
+  }
+  commit('clearEvaluatedKeys');
+  commit('setUseAdvancedFilter', true);
+  commit('setFilterStatus');
+  dispatch('getRecords');
+}
+
 async function getLimitedRows(
   { state, commit, dispatch }: ActionContext<RecordModuleState, RootState>,
   limit: any,
@@ -290,6 +309,7 @@ const actions: ActionTree<RecordModuleState, RootState> = {
   getNextRecords,
   refreshTable,
   filterRecords,
+  filterAdvancedRecords,
 };
 
 export default actions;

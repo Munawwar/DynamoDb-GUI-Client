@@ -1,4 +1,9 @@
-import { RecordModuleState } from './types';
+import { RecordModuleState, AdvancedFilter } from './types';
+
+export const initialAdvancedFilter: AdvancedFilter = {
+  conditions: [{ column: '', expr: '=', value: '', valueType: '' }],
+  logicalOperator: 'AND',
+};
 
 const state: RecordModuleState = {
   showCreateModal: false,
@@ -25,6 +30,8 @@ const state: RecordModuleState = {
     types: ['number', 'string', 'isNull', 'boolean'],
     expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with', 'contains', 'not contains'],
   },
+  advancedFilter: { ...initialAdvancedFilter, conditions: [...initialAdvancedFilter.conditions] },
+  useAdvancedFilter: false,
 };
 
 export default state;

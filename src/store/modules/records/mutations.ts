@@ -1,5 +1,6 @@
 import { MutationTree } from 'vuex';
-import { RecordModuleState } from './types';
+import { RecordModuleState, FilterCondition, LogicalOperator } from './types';
+import { initialAdvancedFilter } from './state';
 
 function toggleCreateModal(state: RecordModuleState) {
   state.showCreateModal = !state.showCreateModal;
@@ -170,6 +171,42 @@ function setNotEqualExpr(state: RecordModuleState, expr: string) {
   }
 }
 
+function setUseAdvancedFilter(state: RecordModuleState, value: boolean) {
+  state.useAdvancedFilter = value;
+}
+
+function setLogicalOperator(state: RecordModuleState, op: LogicalOperator) {
+  state.advancedFilter.logicalOperator = op;
+}
+
+function addFilterCondition(state: RecordModuleState) {
+  state.advancedFilter.conditions.push({ column: '', expr: '=', value: '', valueType: '' });
+}
+
+function removeFilterCondition(state: RecordModuleState, index: number) {
+  if (state.advancedFilter.conditions.length > 1) {
+    state.advancedFilter.conditions.splice(index, 1);
+  }
+}
+
+function updateFilterCondition(
+  state: RecordModuleState,
+  payload: { index: number; field: keyof FilterCondition; value: any },
+) {
+  const condition = state.advancedFilter.conditions[payload.index];
+  if (condition) {
+    (condition as any)[payload.field] = payload.value;
+  }
+}
+
+function resetAdvancedFilter(state: RecordModuleState) {
+  state.advancedFilter = {
+    ...initialAdvancedFilter,
+    conditions: [{ column: '', expr: '=', value: '', valueType: '' }],
+  };
+  state.useAdvancedFilter = false;
+}
+
 function addItemToList(state: RecordModuleState, newItem: any) {
   let edited = false;
   state.data = state.data.map((item) => {
@@ -218,6 +255,11 @@ function initialState(state: RecordModuleState) {
     types: ['number', 'string', 'null', 'boolean'],
     expressions: ['=', '!=', '<', '>', '<=', '>=', 'begins_with', 'contains', 'not contains'],
   };
+  state.advancedFilter = {
+    ...initialAdvancedFilter,
+    conditions: [{ column: '', expr: '=', value: '', valueType: '' }],
+  };
+  state.useAdvancedFilter = false;
 }
 
 function addEvaluatedKey(state: RecordModuleState, lastEvaluatedKey: any) {
@@ -262,6 +304,12 @@ const mutations: MutationTree<RecordModuleState> = {
   setNotEqualExpr,
   setFilterStatus,
   selectRows,
+  setUseAdvancedFilter,
+  setLogicalOperator,
+  addFilterCondition,
+  removeFilterCondition,
+  updateFilterCondition,
+  resetAdvancedFilter,
 };
 
 export default mutations;

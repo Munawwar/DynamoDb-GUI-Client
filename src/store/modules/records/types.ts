@@ -18,6 +18,8 @@ export interface RecordModuleState {
   groupDelete: any[];
   retry: number;
   filterParams: FilterParams;
+  advancedFilter: AdvancedFilter;
+  useAdvancedFilter: boolean;
 }
 
 export interface FilterParams {
@@ -27,4 +29,18 @@ export interface FilterParams {
   valueType: string;
   types: string[];
   expressions: string[];
+}
+
+export interface FilterCondition {
+  column: string;
+  expr: string;
+  value: string | boolean | number | null;
+  valueType: string;
+}
+
+export type LogicalOperator = 'AND' | 'OR';
+
+export interface AdvancedFilter {
+  conditions: FilterCondition[];
+  logicalOperator: LogicalOperator;
 }

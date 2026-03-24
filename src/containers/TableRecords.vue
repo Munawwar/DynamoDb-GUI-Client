@@ -3,12 +3,19 @@
     RecordListFilter(
       :getKeys="getKeys"
       :filterRecords="filterRecords"
+      :filterAdvancedRecords="filterAdvancedRecords"
       :setFilterColumn="setFilterColumn"
       :setFilterValueType="setFilterValueType"
       :setNotEqualExpr="setNotEqualExpr"
       :filtered="records.filtered"
+      :useAdvancedFilter="records.useAdvancedFilter"
       :refreshTable="refreshTable"
       :filterParams="records.filterParams"
+      :advancedFilter="records.advancedFilter"
+      :headerType="records.headerType"
+      :addCondition="addFilterCondition"
+      :removeCondition="removeFilterCondition"
+      :resetAdvancedFilter="resetAdvancedFilter"
     )
     RecordList(
       :list="tableDataPage"
@@ -71,6 +78,7 @@ export default class TableRecords extends Vue {
   @Action('getPreviousRecords', { namespace }) private getPreviousRecords: any;
   @Action('getNextRecords', { namespace }) private getNextRecords: any;
   @Action('refreshTable', { namespace }) private refreshTable: any;
+  @Action('filterAdvancedRecords', { namespace }) private filterAdvancedRecords: any;
   @Mutation('toggleDeleteModal', { namespace }) private toggleDeleteModal: any;
   @Mutation('toggleCreateModal', { namespace }) private toggleCreateModal: any;
   @Mutation('toggleGroupDeleteModal', { namespace })
@@ -80,6 +88,9 @@ export default class TableRecords extends Vue {
   @Mutation('setFilterValueType', { namespace })
   private setFilterValueType: any;
   @Mutation('setNotEqualExpr', { namespace }) private setNotEqualExpr: any;
+  @Mutation('addFilterCondition', { namespace }) private addFilterCondition: any;
+  @Mutation('removeFilterCondition', { namespace }) private removeFilterCondition: any;
+  @Mutation('resetAdvancedFilter', { namespace }) private resetAdvancedFilter: any;
   @Mutation('selectRows', { namespace }) private selectRows: any;
 
   private showDeleteModal(row: any) {

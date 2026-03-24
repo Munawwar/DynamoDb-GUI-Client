@@ -1,5 +1,5 @@
 import { GetterTree } from 'vuex';
-import { RecordModuleState } from './types';
+import { RecordModuleState, FilterCondition } from './types';
 import { RootState } from '@/store/types';
 import getNaturalKeySorter from 'natural-sort-by-key';
 
@@ -50,6 +50,27 @@ const scanIsValid = (state: RecordModuleState) => {
   return typeof filterValue === 'string' && filterValue !== '';
 };
 
+export function isConditionValid(condition: FilterCondition): boolean {
+  if (!condition.column || !condition.expr || !condition.valueType) {
+    return false;
+  }
+  if (condition.valueType === 'null') {
+    return true;
+  }
+  if (condition.valueType === 'boolean') {
+    return typeof condition.value === 'boolean';
+  }
+  if (condition.valueType === 'number') {
+    return condition.value !== '' && Number.isFinite(Number(condition.value));
+  }
+  return typeof condition.value === 'string' && condition.value !== '';
+}
+
+const advancedScanIsValid = (state: RecordModuleState) => {
+  const { conditions } = state.advancedFilter;
+  return conditions.length > 0 && conditions.every(isConditionValid);
+};
+
 const itemCount = (_: RecordModuleState, __: any, rootState: any) =>
   rootState.table.tableMeta.ItemCount;
 
@@ -58,6 +79,7 @@ const getters: GetterTree<RecordModuleState, RootState> = {
   tableDataPage,
   getKeys,
   scanIsValid,
+  advancedScanIsValid,
   hideHashKey,
   itemCount,
 };

@@ -104,6 +104,7 @@ function setHeader(state: RecordModuleState) {
       }
     }
   }
+  state.header.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
 }
 
 function setData(state: RecordModuleState, data: any[]) {
@@ -272,7 +273,7 @@ function getClientPageSize(state: RecordModuleState): number {
 
 function flushScanBuffer(state: RecordModuleState) {
   state.bufferPageIndex = 0;
-  state.header = Array.from(scanHeaderSet);
+  state.header = Array.from(scanHeaderSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
   state.headerType = { ...scanHeaderType };
   const pageSize = getClientPageSize(state);
   state.data = scanBufferRaw.slice(0, pageSize);

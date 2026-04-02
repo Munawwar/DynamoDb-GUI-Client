@@ -71,7 +71,7 @@ export default class RecordList extends Vue {
       if (typeof value !== 'object' && !Number.isNaN(numValue)) {
         return { empty: false, rank: 1, value: numValue };
       }
-      return { empty: false, rank: 2, value: String(value).toLowerCase() };
+      return { empty: false, rank: 2, value: String(value) };
     };
     const left = normalize(a[prop]);
     const right = normalize(b[prop]);
@@ -79,6 +79,9 @@ export default class RecordList extends Vue {
       return left.empty === right.empty ? 0 : (left.empty ? 1 : -1);
     }
     if (left.rank === right.rank) {
+      if (left.rank === 2) {
+        return left.value.localeCompare(right.value, undefined, { sensitivity: 'base' });
+      }
       return left.value > right.value ? 1 : (left.value < right.value ? -1 : 0);
     }
     return left.rank - right.rank;

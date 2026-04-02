@@ -100,11 +100,11 @@ function setHeader(state: RecordModuleState) {
         typeof row[key] === 'boolean' ||
         typeof row[key] === 'undefined'
       ) {
-        row[key] += '';
+        row[key] = String(row[key]);
       }
     }
   }
-  state.header.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  state.header.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
 }
 
 function setData(state: RecordModuleState, data: any[]) {
@@ -243,7 +243,7 @@ function finishScan(state: RecordModuleState) {
 function appendData(state: RecordModuleState, items: any[]) {
   // All work here is on non-reactive data — only scanRowCount triggers Vue
   for (const row of items) {
-    for (const key in row) {
+    for (const key of Object.keys(row)) {
       scanHeaderSet.add(key);
       if (
         !scanHeaderType[key] &&
@@ -257,7 +257,7 @@ function appendData(state: RecordModuleState, items: any[]) {
         typeof row[key] === 'boolean' ||
         typeof row[key] === 'undefined'
       ) {
-        row[key] += '';
+        row[key] = String(row[key]);
       }
     }
     scanBufferRaw.push(row);
@@ -273,7 +273,7 @@ function getClientPageSize(state: RecordModuleState): number {
 
 function flushScanBuffer(state: RecordModuleState) {
   state.bufferPageIndex = 0;
-  state.header = Array.from(scanHeaderSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  state.header = Array.from(scanHeaderSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
   state.headerType = { ...scanHeaderType };
   const pageSize = getClientPageSize(state);
   state.data = scanBufferRaw.slice(0, pageSize);

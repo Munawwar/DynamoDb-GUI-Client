@@ -80,7 +80,7 @@ export default class RecordList extends Vue {
     }
     if (left.rank === right.rank) {
       if (left.rank === 2) {
-        return left.value.localeCompare(right.value, undefined, { sensitivity: 'base' });
+        return (left.value as string).localeCompare(right.value as string, undefined, { sensitivity: 'base', numeric: true });
       }
       return left.value > right.value ? 1 : (left.value < right.value ? -1 : 0);
     }

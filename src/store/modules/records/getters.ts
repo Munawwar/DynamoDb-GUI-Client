@@ -1,7 +1,6 @@
 import { GetterTree } from 'vuex';
 import { RecordModuleState, FilterCondition } from './types';
 import { RootState } from '@/store/types';
-import getNaturalKeySorter from 'natural-sort-by-key';
 
 const keys = (state: RecordModuleState) => {
   return {
@@ -12,15 +11,12 @@ const keys = (state: RecordModuleState) => {
 
 const tableDataPage = (state: RecordModuleState) => state.data;
 
-const valueSorter = getNaturalKeySorter('value');
-
 const getKeys = (state: RecordModuleState) => (queryString: string | undefined, cb: any) => {
   const searchString = (queryString || '').toLowerCase();
   return cb(
     state.header
       .filter((item) => searchString ? item.toLowerCase().includes(searchString) : true)
-      .map((item) => ({ value: item }))
-      .sort(valueSorter),
+      .map((item) => ({ value: item })),
   );
 };
 

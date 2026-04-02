@@ -15,7 +15,6 @@
   "dependencies": {
     "aws-sdk": "^2.1286.0",
     "element-ui": "^2.7.0",
-    "natural-sort-by-key": "^2.1.0",
     "vue": "^2.6.10",
     "vue-awesome": "^3.5.1",
     "vue-class-component": "^7.0.2",

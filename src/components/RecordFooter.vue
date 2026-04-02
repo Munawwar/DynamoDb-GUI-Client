@@ -125,6 +125,10 @@ export default class RecordFooter extends Vue {
   color #e6a23c
   margin-left 4px
   font-size 14px
+  vertical-align middle
+
+/deep/ .is-active .warning-icon
+  color #000
 
 .container
   position absolute

@@ -7,6 +7,8 @@ let scanBufferRaw: any[] = [];
 let scanHeaderSet: Set<string> = new Set();
 let scanHeaderType: { [key: string]: string } = {};
 
+const collator = new Intl.Collator(undefined, { sensitivity: 'base', numeric: true });
+
 function toggleCreateModal(state: RecordModuleState) {
   state.showCreateModal = !state.showCreateModal;
 }
@@ -104,7 +106,7 @@ function setHeader(state: RecordModuleState) {
       }
     }
   }
-  state.header.sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
+  state.header.sort(collator.compare);
 }
 
 function setData(state: RecordModuleState, data: any[]) {
@@ -273,7 +275,7 @@ function getClientPageSize(state: RecordModuleState): number {
 
 function flushScanBuffer(state: RecordModuleState) {
   state.bufferPageIndex = 0;
-  state.header = Array.from(scanHeaderSet).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true }));
+  state.header = Array.from(scanHeaderSet).sort(collator.compare);
   state.headerType = { ...scanHeaderType };
   const pageSize = getClientPageSize(state);
   state.data = scanBufferRaw.slice(0, pageSize);

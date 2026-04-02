@@ -26,7 +26,7 @@
         :prop="header"
         :sort-method="(a, b) => compareByProp(a, b, header)"
         :label="header"
-        :key="index"
+        :key="header"
         v-if="hideHashKey(header)"
         sortable=true
       )

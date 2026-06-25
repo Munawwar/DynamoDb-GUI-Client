@@ -68,6 +68,8 @@
       "package.json"
     ],
     "linux": {
+      "category": "Development",
+      "icon": "build/icons",
       "target": [
         "AppImage"
       ]

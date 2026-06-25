@@ -1,6 +1,5 @@
 <template lang="pug">
   div
-    div(class="note") This desktop build uses AWS profiles from your machine. Run <code>aws sso login --profile ...</code> in a terminal when the selected profile needs a fresh SSO session.
     el-col(:span="24")
       .panel
         el-form
@@ -18,18 +17,16 @@
                 :label="`${profile.name} (${profile.region || 'no region'})`"
                 :value="profile.name"
               )
-          el-form-item(label="Region")
-            el-input(:value="selectedRegion || 'No region configured'" disabled)
           el-alert(
             v-if="!profiles.length"
-            title="No AWS profiles found in ~/.aws/config."
+            title="No SSO profiles found in ~/.aws/config."
             type="warning"
             :closable="false"
             show-icon
           )
           el-alert(
             v-else
-            title="Credentials stay on your machine. The app requests short-lived credentials from the selected AWS profile when needed."
+            title="Run aws sso login for the selected profile when it needs a fresh session."
             type="info"
             :closable="false"
             show-icon
@@ -54,7 +51,6 @@ import ActionButtons from './ActionButtons.vue';
 export default class ConnectDatabase extends Vue {
   @Prop(Array) private profiles!: Array<{ name: string; region: string }>;
   @Prop(String) private selectedProfile!: string;
-  @Prop(String) private selectedRegion!: string;
   @Prop(Function) private selectProfile!: (profile: string) => void;
   @Prop(Function) private connectProfile!: () => void;
   @Prop(Function) private refreshProfiles!: () => void;
@@ -62,15 +58,6 @@ export default class ConnectDatabase extends Vue {
 </script>
 
 <style lang="stylus" scoped>
-.note
-  width 80%
-  max-width: 700px;
-  margin 30px auto
-  text-align center
-
-a
-  color #00adff
-
 .el-col
   display flex
   justify-content center

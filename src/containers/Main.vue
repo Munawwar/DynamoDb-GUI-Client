@@ -4,7 +4,6 @@
       v-if="!currentDb"
       :profiles="database.list"
       :selectedProfile="database.selectedProfile"
-      :selectedRegion="selectedProfileRegion"
       :selectProfile="setSelectedProfile"
       :connectProfile="connectProfile"
       :refreshProfiles="loadProfiles"
@@ -47,13 +46,6 @@ export default class Main extends Vue {
   @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
   @Action private getCurrentDb!: (name: string) => Promise<void>;
   @Mutation('setSelectedProfile', { namespace }) private setSelectedProfile!: (name: string) => void;
-
-  private get selectedProfileRegion() {
-    const selected = this.database.list.find(
-      (profile) => profile.name === this.database.selectedProfile,
-    );
-    return (selected && selected.region) || '';
-  }
 
   private connectProfile() {
     this.database.selectedProfile && this.getCurrentDb(this.database.selectedProfile);

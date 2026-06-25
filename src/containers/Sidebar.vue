@@ -9,8 +9,6 @@
     SidebarTables(
       v-if="currentDb"
       :currentDb="currentDb"
-      :currentRegion="currentRegion"
-      :credentialsExpireAt="credentialsExpireAt"
       :getCurrentDb="getCurrentDb"
       :getDbTables="getDbTables"
       :databaseList="database.list"
@@ -42,8 +40,6 @@ const namespace = 'database';
 })
 export default class Sidebar extends Vue {
   @Getter private currentDb!: string;
-  @Getter private currentRegion!: string;
-  @Getter private credentialsExpireAt!: string;
   @Getter private currentTable!: string;
   @Getter private filteredTables!: string[];
   @Getter private filterText!: string;

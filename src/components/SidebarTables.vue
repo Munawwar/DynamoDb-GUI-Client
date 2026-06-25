@@ -6,14 +6,8 @@
       .input-field
         el-select(:value="currentDb" @change="getCurrentDb" placeholder="Select Profile" spellcheck="false" :title="currentDb")
           el-option(v-for="db in databaseList" :key="db.name" :label="`${db.name} (${db.region || 'no region'})`" :value="db.name")
-      el-row(class="change-title")
-        el-col(:span="24")
-          div.label Connected Profile
-          div.value {{ currentDb }}
-          div.meta {{ currentRegion || 'No region configured' }}
-          div.meta(v-if="credentialsExpireAt") Expires {{ credentialsExpireAt }}
       el-row(class="input-field")
-        el-input(placeholder="Search Table" @input="filterTextChange" :value="filterText" suffix-icon="el-icon-search" spellcheck="false")
+        el-input(placeholder="Search tables" @input="filterTextChange" :value="filterText" suffix-icon="el-icon-search" spellcheck="false")
       el-row(class="table-actions")
         el-col(:span="12" class="title") TABLES
         el-col(:span="12" class="actions")
@@ -44,8 +38,6 @@ export default class SidebarTables extends Vue {
   @Prop(Array) private tableList!: string[];
   @Prop(String) private currentTable!: string;
   @Prop(String) private currentDb!: string;
-  @Prop(String) private currentRegion!: string;
-  @Prop(String) private credentialsExpireAt!: string;
   @Prop(String) private filterText!: string;
 
   private isActive(table: any) {
@@ -71,7 +63,7 @@ export default class SidebarTables extends Vue {
   padding 10px
   border-bottom 1px solid #121820
 
-.table-actions, .change-title
+.table-actions
   font-size .9em
   padding 10px
   border-bottom 1px solid #121820
@@ -138,15 +130,4 @@ export default class SidebarTables extends Vue {
   overflow-y auto
   font-size 1em
 
-.label
-  color #8d96a5
-  margin-bottom 4px
-
-.value
-  font-weight 500
-
-.meta
-  color #8d96a5
-  font-size .85em
-  margin-top 2px
 </style>

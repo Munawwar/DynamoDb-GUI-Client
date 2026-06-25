@@ -25,15 +25,24 @@ async function getProfileRegion(name) {
   return runAws(['configure', 'get', 'region', '--profile', name]).catch(() => '');
 }
 
+async function getProfileValue(name, key) {
+  return runAws(['configure', 'get', key, '--profile', name]).catch(() => '');
+}
+
 async function listProfiles() {
   const stdout = await runAws(['configure', 'list-profiles']);
   const profiles = stdout.split('\n').map((value) => value.trim()).filter(Boolean);
-  return Promise.all(
-    profiles.map(async (name) => ({
-      name,
-      region: await getProfileRegion(name),
-    })),
+  const resolved = await Promise.all(
+    profiles.map(async (name) => {
+      const [region, ssoSession, ssoStartUrl] = await Promise.all([
+        getProfileRegion(name),
+        getProfileValue(name, 'sso_session'),
+        getProfileValue(name, 'sso_start_url'),
+      ]);
+      return ssoSession || ssoStartUrl ? { name, region } : null;
+    }),
   );
+  return resolved.filter(Boolean);
 }
 
 async function resolveProfile(_, name) {

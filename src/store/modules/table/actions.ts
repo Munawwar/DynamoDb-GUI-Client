@@ -8,6 +8,9 @@ async function createTable({
   state,
   dispatch,
 }: ActionContext<TableModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbInstance } = rootState;
   const params = state.newTableMeta;
   commit('loading', true, { root: true });
@@ -33,7 +36,11 @@ async function createTable({
 async function getMeta({
   commit,
   rootState,
+  dispatch,
 }: ActionContext<TableModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbInstance, currentTable } = rootState;
   commit('loading', true, { root: true });
   let data;
@@ -55,7 +62,11 @@ async function updateTable({
   commit,
   rootState,
   state,
+  dispatch,
 }: ActionContext<TableModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbInstance } = rootState;
   const { tableMeta } = state;
   commit('loading', true, { root: true });
@@ -93,6 +104,9 @@ async function deleteTable({
   rootState,
   dispatch,
 }: ActionContext<TableModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbInstance, currentTable } = rootState;
   commit('loading', true, { root: true });
   try {

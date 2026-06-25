@@ -26,6 +26,9 @@ async function putItem({
   rootState,
   state,
 }: ActionContext<RecordModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   const Item = state.recordMeta;
@@ -47,9 +50,12 @@ async function putItem({
 }
 
 async function getItem(
-  { state, commit, rootState }: ActionContext<RecordModuleState, RootState>,
+  { state, commit, rootState, dispatch }: ActionContext<RecordModuleState, RootState>,
   row: any,
 ) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   const params: GetItemInput = {
@@ -74,6 +80,9 @@ async function removeItem({
   dispatch,
   state,
 }: ActionContext<RecordModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   const row = state.recordMeta;
@@ -104,6 +113,9 @@ async function removeSelected({
   dispatch,
   state,
 }: ActionContext<RecordModuleState, RootState>) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   let result = false;
@@ -169,6 +181,9 @@ async function getRecords(
   }: ActionContext<RecordModuleState, RootState>,
   params: ScanInput,
 ) {
+  if (!(await dispatch('ensureCurrentDb', null, { root: true }))) {
+    return;
+  }
   const { dbClient } = rootState;
   const { currentTable } = rootState;
   const isClientPagination = state.paginationMode === 'client';

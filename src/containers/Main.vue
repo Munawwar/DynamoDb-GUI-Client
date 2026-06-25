@@ -2,12 +2,12 @@
   el-col(:span="24" class="main" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)")  
     ConnectDatabase(
       v-if="!currentDb"
-      :configs="database.submitForm.configs"
-      :regionList="database.regionList"
-      :submitForm="database.submitForm"
-      :submitRemoteForm="submitRemoteForm"
-      :submitLocalForm="submitLocalForm"
-      :setToDefault="setToDefault"
+      :profiles="database.list"
+      :selectedProfile="database.selectedProfile"
+      :selectedRegion="selectedProfileRegion"
+      :selectProfile="setSelectedProfile"
+      :connectProfile="connectProfile"
+      :refreshProfiles="loadProfiles"
     )
     el-col(:span="24" v-if="currentTable")
       el-tabs(v-if="currentTable" v-model="activeTab" type="card" class="Main_el-tabs")
@@ -15,26 +15,24 @@
           TableRecords
         el-tab-pane(label="Meta" name="meta")
           TableMeta
-    DatabaseModals(v-if="database.showEditModal")
     span(v-if="response.message")
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { Getter, Action, Mutation, State } from 'vuex-class';
-import { RootState } from '../store/types';
 import ConnectDatabase from '../components/ConnectDatabase.vue';
-import DatabaseModals from './DatabaseModals.vue';
 import TableRecords from './TableRecords.vue';
 import TableMeta from './TableMeta.vue';
-const namespace: string = 'database';
+import { DatabaseModuleState } from '../store/modules/database/types';
+
+const namespace = 'database';
 
 @Component({
   components: {
     ConnectDatabase,
     TableRecords,
     TableMeta,
-    DatabaseModals,
   },
 })
 export default class Main extends Vue {
@@ -45,10 +43,22 @@ export default class Main extends Vue {
   @Getter private response!: { message: string; title: string; type: string };
   @Getter private loading!: boolean;
   @Mutation private notified: any;
-  @State(namespace) private database!: RootState;
-  @Action('submitRemoteForm', { namespace }) private submitRemoteForm: any;
-  @Action('submitLocalForm', { namespace }) private submitLocalForm: any;
-  @Mutation('setToDefault', { namespace }) private setToDefault: any;
+  @State(namespace) private database!: DatabaseModuleState;
+  @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
+  @Action private getCurrentDb!: (name: string) => Promise<void>;
+  @Mutation('setSelectedProfile', { namespace }) private setSelectedProfile!: (name: string) => void;
+
+  private get selectedProfileRegion() {
+    const selected = this.database.list.find(
+      (profile) => profile.name === this.database.selectedProfile,
+    );
+    return (selected && selected.region) || '';
+  }
+
+  private connectProfile() {
+    this.database.selectedProfile && this.getCurrentDb(this.database.selectedProfile);
+  }
+
   private updated() {
     if (this.response.message) {
       this.$notify({

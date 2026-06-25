@@ -6,6 +6,8 @@ export interface RootState {
   filterText: string;
   currentTable: any;
   currentDb: string;
+  currentRegion: string;
+  credentialsExpireAt: string;
   dbInstance: DynamoDB;
   dbClient: DocumentClient;
   response: {

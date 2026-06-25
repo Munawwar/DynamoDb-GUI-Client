@@ -6,6 +6,8 @@ const state: RootState = {
   dbClient: new DynamoDB.DocumentClient(),
   currentTable: '',
   currentDb: '',
+  currentRegion: '',
+  credentialsExpireAt: '',
   tables: [],
   filterText: '',
   loading: false,

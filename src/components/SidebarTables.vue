@@ -1,19 +1,17 @@
 <template lang="pug">
   .outer
     .inner-fixed
-      el-button(type="primary" plain @click="initialState")
-        span Quick Connect
+      el-button(type="primary" plain @click="disconnect")
+        span Disconnect
       .input-field
-        el-select(:value="currentDb" @change="getCurrentDb" placeholder="Select Database" spellcheck="false" :title="currentDb")
-          el-option(
-            v-for="db in databaseList"
-            :key="db.name"
-            :value="db.name"
-          )
+        el-select(:value="currentDb" @change="getCurrentDb" placeholder="Select Profile" spellcheck="false" :title="currentDb")
+          el-option(v-for="db in databaseList" :key="db.name" :label="`${db.name} (${db.region || 'no region'})`" :value="db.name")
       el-row(class="change-title")
-        el-col(:span="22") Edit Database
-        el-col(:span="2" class="edit")
-          i(class="el-icon-edit" @click="toggleEditModal")
+        el-col(:span="24")
+          div.label Connected Profile
+          div.value {{ currentDb }}
+          div.meta {{ currentRegion || 'No region configured' }}
+          div.meta(v-if="credentialsExpireAt") Expires {{ credentialsExpireAt }}
       el-row(class="input-field")
         el-input(placeholder="Search Table" @input="filterTextChange" :value="filterText" suffix-icon="el-icon-search" spellcheck="false")
       el-row(class="table-actions")
@@ -39,14 +37,15 @@ export default class SidebarTables extends Vue {
   @Prop(Function) private getDbTables: any;
   @Prop(Function) private switchTable: any;
   @Prop(Function) private filterTextChange: any;
-  @Prop(Function) private initialState: any;
+  @Prop(Function) private disconnect: any;
   @Prop(Function) private toggleCreateModal: any;
   @Prop(Function) private toggleDeleteModal: any;
-  @Prop(Function) private toggleEditModal: any;
-  @Prop(Array) private databaseList!: string[];
+  @Prop(Array) private databaseList!: Array<{ name: string; region: string }>;
   @Prop(Array) private tableList!: string[];
   @Prop(String) private currentTable!: string;
   @Prop(String) private currentDb!: string;
+  @Prop(String) private currentRegion!: string;
+  @Prop(String) private credentialsExpireAt!: string;
   @Prop(String) private filterText!: string;
 
   private isActive(table: any) {
@@ -98,16 +97,6 @@ export default class SidebarTables extends Vue {
 .el-select
   width 100%
 
-.edit
-  margin-left 10px
-  display flex
-  justify-content flex-end
-  align-items center
-
-.edit:hover
-  color #00d986
-  cursor pointer
-
 .list-item
   background #121820
   margin 5px 10px
@@ -148,4 +137,16 @@ export default class SidebarTables extends Vue {
   flex-grow 1
   overflow-y auto
   font-size 1em
+
+.label
+  color #8d96a5
+  margin-bottom 4px
+
+.value
+  font-weight 500
+
+.meta
+  color #8d96a5
+  font-size .85em
+  margin-top 2px
 </style>

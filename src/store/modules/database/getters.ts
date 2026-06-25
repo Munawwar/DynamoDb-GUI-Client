@@ -2,18 +2,11 @@ import { GetterTree } from 'vuex';
 import { DatabaseModuleState } from './types';
 import { RootState } from '@/store/types';
 
-const validateForm = (state: DatabaseModuleState) => {
-  const obj: any = state.submitForm.configs;
-  for (const key in obj) {
-    if (!obj[key] && key !== 'dynamoDbCrc32') {
-      return;
-    }
-  }
-  return true;
-};
+const selectedProfileDetails = (state: DatabaseModuleState) =>
+  state.list.find((profile) => profile.name === state.selectedProfile);
 
 const getters: GetterTree<DatabaseModuleState, RootState> = {
-  validateForm,
+  selectedProfileDetails,
 };
 
 export default getters;

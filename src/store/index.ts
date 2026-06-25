@@ -4,7 +4,6 @@ import { RootState } from './types';
 import database from './modules/database/index';
 import records from './modules/records/index';
 import table from './modules/table/index';
-import masterPassword from './modules/masterPassword/index';
 import actions from './actions';
 import mutations from './mutations';
 import getters from './getters';
@@ -16,7 +15,6 @@ const modules: ModuleTree<RootState> = {
   database,
   table,
   records,
-  masterPassword,
 };
 
 const store: StoreOptions<RootState> = {

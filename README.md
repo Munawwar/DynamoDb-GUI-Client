@@ -5,13 +5,11 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 
-## GUI client for DynamoDb
+## Desktop GUI client for DynamoDB
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 
 ### [Release v3.5.3](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.5.3)
-
-#### [Web Client](https://dynamodb.pages.dev)
 
 ![Logo](src/assets/git-logo.png)
 
@@ -24,24 +22,26 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
+aws sso login --profile <your-profile>
 npm start
 ```
 
-## Build Instructions
+## Package
 
 ```bash
 git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client
 npm i
-npm run build
+npm run package
 ```
 
 ## Features
 
 - [x] Remote Access of AWS DynamoDB Service\*
-- [x] Local DynamoDB
-- [x] Supports multiple databases
-- [x] Master password encryption for stored credentials
+- [x] Desktop app with local AWS profile access
+- [x] AWS SSO / IAM Identity Center profiles via `aws configure export-credentials`
+- [x] Automatic credential refresh by re-resolving the selected AWS profile
+- [x] Supports switching between multiple local AWS profiles
 - View
   - Table view
     - [x] Records view
@@ -58,8 +58,6 @@ npm run build
     - [x] Delete Table
   - Filter by attribute value
   - Filter by attribute name
-
-- For remote access, need to provide access and secret keys. All keys are encrypted and stored in localStorage.
 
 ## Contributors
 

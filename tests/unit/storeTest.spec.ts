@@ -1,36 +1,44 @@
-import storeConfig from '@/store';
-import database from '@/store/modules/database';
-import table from '@/store/modules/database';
-import record from '@/store/modules/database';
-import {
-  fakeSubmitForm,
-  emptySubmitForm,
-  duplicateDbName,
-  wrongSubmitForm,
-} from './testData';
+import store from '@/store';
 
-const store = storeConfig;
+const profiles = [
+  { name: 'dev-write', region: 'eu-west-1' },
+  { name: 'prod-read', region: 'eu-west-1' },
+];
 
-test('Database submitted with missing field', async () => {
-  database.state.submitForm = emptySubmitForm;
-  await store.dispatch('database/setCredentials');
-  expect(database.state.list.length).toBe(0);
+const connection = {
+  name: 'dev-write',
+  region: 'eu-west-1',
+  accessKeyId: 'test-key',
+  secretAccessKey: 'test-secret',
+  sessionToken: 'test-token',
+  expiration: '2099-01-01T00:00:00Z',
+};
+
+function resetStore() {
+  localStorage.clear();
+  store.commit('initialState');
+  store.commit('database/setProfiles', []);
+  store.commit('database/setSelectedProfile', '');
+}
+
+beforeEach(() => {
+  resetStore();
+  window.electronAPI = {
+    listProfiles: jest.fn().mockResolvedValue(profiles),
+    resolveProfile: jest.fn().mockResolvedValue(connection),
+  };
 });
 
-test('Database submitted with missing field', async () => {
-  database.state.submitForm = wrongSubmitForm;
-  const response = await store.dispatch('database/setCredentials');
-  expect(response).toBeUndefined();
+test('profile list loads and restores the last selection', async () => {
+  localStorage.setItem('__last_profile', 'prod-read');
+  await store.dispatch('database/loadProfiles');
+  expect((store.state as any).database.list).toEqual(profiles);
+  expect((store.state as any).database.selectedProfile).toBe('prod-read');
 });
 
-test('Database added successfully', async () => {
-  database.state.submitForm = fakeSubmitForm;
-  await store.dispatch('database/setCredentials');
-  localStorage.setItem(`${fakeSubmitForm.name}-db`, JSON.stringify(database));
-  expect(database.state.list.length).toBe(1);
-  database.state.submitForm = duplicateDbName;
-  await store.dispatch('database/setCredentials');
-  expect(store.state.response.message).toBe(
-    'Database with that name already exists',
-  );
+test('connecting a profile updates the active dynamodb session', async () => {
+  await store.dispatch('getCurrentDb', 'dev-write');
+  expect(store.getters.currentDb).toBe('dev-write');
+  expect(store.getters.currentRegion).toBe('eu-west-1');
+  expect(localStorage.getItem('__last_profile')).toBe('dev-write');
 });

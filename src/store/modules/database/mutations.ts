@@ -1,67 +1,24 @@
 import { MutationTree } from 'vuex';
-import { DatabaseModuleState, SingleDatabaseModuleState } from './types';
+import { DatabaseModuleState } from './types';
 
-function setToDefault(state: DatabaseModuleState) {
-  state.submitForm.configs = {
-    accessKeyId: '',
-    secretAccessKey: '',
-    region: '',
-    endpoint: 'http://localhost:',
-    maxRetries: 1,
-    dynamoDbCrc32: false,
-  };
-  state.submitForm.name = 'Database ' + (state.list.length + 1);
-  state.showEditModal = false;
-}
-
-function setDbList(
+function setProfiles(
   state: DatabaseModuleState,
-  newDbList: SingleDatabaseModuleState[],
+  profiles: Array<{ name: string; region: string }>,
 ) {
-  state.list = newDbList;
+  state.list = profiles;
 }
 
-function correctInputs(state: DatabaseModuleState, serviceType: string) {
-  switch (serviceType) {
-    case 'remote':
-      if (state.submitForm.configs.region === 'cn-north-1' || state.submitForm.configs.region === 'cn-northwest-1') {
-        state.submitForm.configs.endpoint = `https://dynamodb.${
-          state.submitForm.configs.region
-        }.amazonaws.com.cn`;
-      } else {
-        state.submitForm.configs.endpoint = `https://dynamodb.${
-          state.submitForm.configs.region
-        }.amazonaws.com`;
-      }
-      state.submitForm.name = state.submitForm.name || `Database ${state.list.length + 1}`;
-      break;
-    case 'local':
-      // state.submitForm.configs.region = 'localhost';
-       // state.submitForm.configs.accessKeyId = Math.random()
-       //   .toString(36)
-       //   .substring(7);
-       // state.submitForm.configs.secretAccessKey = Math.random()
-       //   .toString(36)
-       //   .substring(7);
-      state.submitForm.name =
-        state.submitForm.name || `Database ${state.list.length + 1}`;
-      break;
-  }
+function setSelectedProfile(state: DatabaseModuleState, profile: string) {
+  state.selectedProfile = profile;
 }
 
-function toggleEditModal(state: DatabaseModuleState) {
-  state.showEditModal = !state.showEditModal;
-}
-
-function fillEditFormFromData(state: DatabaseModuleState, database: any) {
-  state.submitForm = Object.assign({}, state.submitForm, database);
+function setLoadingProfiles(state: DatabaseModuleState, loadingProfiles: boolean) {
+  state.loadingProfiles = loadingProfiles;
 }
 
 const mutations: MutationTree<DatabaseModuleState> = {
-  correctInputs,
-  setToDefault,
-  setDbList,
-  toggleEditModal,
-  fillEditFormFromData,
+  setProfiles,
+  setSelectedProfile,
+  setLoadingProfiles,
 };
 export default mutations;

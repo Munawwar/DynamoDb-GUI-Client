@@ -1,5 +1,6 @@
 {
   "name": "dynamodb-gui-client",
+  "desktopName": "com.dynamodb.guiclient",
   "version": "3.5.3",
   "description": "DynamoDb-GUI-Client",
   "author": {
@@ -63,6 +64,7 @@
     "productName": "DynamoDbGUI",
     "asar": true,
     "files": [
+      "build/icons/**/*",
       "dist/**/*",
       "electron/**/*",
       "package.json"
@@ -70,6 +72,7 @@
     "linux": {
       "category": "Development",
       "icon": "build/icons",
+      "syncDesktopName": true,
       "target": [
         "AppImage"
       ]

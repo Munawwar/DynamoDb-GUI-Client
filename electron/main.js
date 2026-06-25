@@ -3,11 +3,16 @@ const { execFile } = require('child_process');
 const path = require('path');
 
 const awsBin = process.platform === 'win32' ? 'aws.cmd' : 'aws';
+const desktopName = 'com.dynamodb.guiclient';
+const appIcon = path.join(__dirname, '..', 'build', 'icons', '512x512.png');
 const isDevelopment = !app.isPackaged && !!process.env.ELECTRON_START_URL;
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
 app.commandLine.appendSwitch('disable-software-rasterizer');
+if (process.platform === 'linux') {
+  app.setDesktopName(desktopName);
+}
 
 function runAws(args) {
   return new Promise((resolve, reject) => {
@@ -76,6 +81,7 @@ function createWindow() {
     show: true,
     autoHideMenuBar: true,
     backgroundColor: '#121820',
+    icon: appIcon,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,

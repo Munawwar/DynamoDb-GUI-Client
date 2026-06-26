@@ -98,11 +98,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Prepare Windows icon
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: Copy-Item public/favicon.ico build/icon.ico
-
       - name: Prepare macOS icon
         if: runner.os == 'macOS'
         shell: bash

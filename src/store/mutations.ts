@@ -20,6 +20,7 @@ function initialState(state: RootState) {
   state.tables = [];
   state.filterText = '';
   state.loading = false;
+  state.tableListLoading = false;
   state.response = {
     title: '',
     type: '',
@@ -126,6 +127,10 @@ function loading(state: RootState, isLoading: boolean) {
   state.loading = isLoading;
 }
 
+function tableListLoading(state: RootState, isLoading: boolean) {
+  state.tableListLoading = isLoading;
+}
+
 function setCurrentTable(state: RootState, tableName: string) {
   state.currentTable = tableName;
 }
@@ -143,6 +148,7 @@ const mutations: MutationTree<RootState> = {
   setTableNames,
   deleteFromList,
   loading,
+  tableListLoading,
   setCurrentTable,
   notified,
   filterTextChange,

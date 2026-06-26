@@ -19,57 +19,65 @@ async function getCurrentDb(
   { commit, dispatch, rootState }: ActionContext<RootState, RootState>,
   name: string,
 ) {
-  const mp = (rootState as any).masterPassword;
-  const raw = localStorage.getItem(`${name}-db`);
-  if (!raw) { return; }
+  commit('loading', true);
   try {
-    const decrypted = await decrypt(raw, mp.password, mp.salt);
-    const database = JSON.parse(decrypted);
-    commit('setDBInstancesFromData', database);
-  } catch (err) {
-    commit('showResponse', { message: 'Failed to decrypt database credentials.' });
-    return;
+    const mp = (rootState as any).masterPassword;
+    const raw = localStorage.getItem(`${name}-db`);
+    if (!raw) { return; }
+    try {
+      const decrypted = await decrypt(raw, mp.password, mp.salt);
+      const database = JSON.parse(decrypted);
+      commit('setDBInstancesFromData', database);
+    } catch (err) {
+      commit('showResponse', { message: 'Failed to decrypt database credentials.' });
+      return;
+    }
+    localStorage.setItem('__last_db', name);
+    await dispatch('getDbTables');
+  } finally {
+    commit('loading', false);
   }
-  localStorage.setItem('__last_db', name);
-  dispatch('getDbTables');
 }
 
 async function getCurrentProfile(
   { commit, dispatch }: ActionContext<RootState, RootState>,
   name: string,
 ) {
+  commit('loading', true);
   try {
     const connection = await resolveProfile(name);
     commit('database/setSelectedProfile', name, { root: true });
     commit('setDBInstancesFromProfile', { connection });
+    localStorage.setItem('__last_profile', name);
+    await dispatch('getDbTables');
   } catch (err) {
     commit('showResponse', await getCredentialError(err, name));
-    return;
+  } finally {
+    commit('loading', false);
   }
-  localStorage.setItem('__last_profile', name);
-  dispatch('getDbTables');
 }
 
 async function getDbTables(
   { state, commit, dispatch }: ActionContext<RootState, RootState>,
   tableToGet: string,
 ) {
-  if (!(await dispatch('ensureCurrentDb'))) {
-    return;
-  }
-  let data;
+  commit('tableListLoading', true);
   try {
-    data = await getTablesPaginated(state);
+    if (!(await dispatch('ensureCurrentDb'))) {
+      return;
+    }
+    const data = await getTablesPaginated(state);
+    if (data.TableNames && !data.TableNames.length) {
+      commit('records/initialState');
+      commit('table/setTableMeta', {});
+    } else {
+      commit('setTableNames', data.TableNames);
+      tableToGet && dispatch('getCurrentTable', tableToGet);
+    }
   } catch (err) {
     commit('showResponse', err);
-    return;
-  }
-  if (data.TableNames && !data.TableNames.length) {
-    commit('records/initialState');
-    commit('table/setTableMeta', {});
-  } else {
-    commit('setTableNames', data.TableNames);
-    tableToGet && dispatch('getCurrentTable', tableToGet);
+  } finally {
+    commit('tableListLoading', false);
   }
 }
 

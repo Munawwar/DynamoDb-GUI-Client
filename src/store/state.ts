@@ -12,6 +12,7 @@ const state: RootState = {
   tables: [],
   filterText: '',
   loading: false,
+  tableListLoading: false,
   response: {
     title: '',
     type: '',

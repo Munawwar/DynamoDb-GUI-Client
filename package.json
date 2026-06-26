@@ -1,7 +1,7 @@
 {
   "name": "dynamodb-gui-client",
   "desktopName": "com.dynamodb.guiclient",
-  "version": "3.5.7",
+  "version": "3.5.8",
   "description": "DynamoDb-GUI-Client",
   "author": {
     "name": "Misak Poghosyan",
@@ -9,6 +9,9 @@
   },
   "scripts": {
     "build": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js build",
+    "dev": "npm run dev:electron",
+    "dev:browser": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js serve --host 127.0.0.1 --port 8080 --no-progress",
+    "dev:electron": "node scripts/dev-electron.js",
     "lint": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js lint",
     "package": "npm run build && electron-builder",
     "start": "npm run build && env ELECTRON_OZONE_PLATFORM_HINT=x11 LIBGL_ALWAYS_SOFTWARE=1 electron . --no-sandbox --disable-gpu-sandbox",

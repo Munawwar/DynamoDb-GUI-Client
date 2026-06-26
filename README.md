@@ -18,6 +18,20 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 ## Run
 
+Fast desktop dev mode with Vue HMR:
+
+```bash
+npm run dev
+```
+
+Browser-only dev mode:
+
+```bash
+npm run dev:browser
+```
+
+Production-like Electron run:
+
 ```bash
 git clone https://github.com/Munawwar/DynamoDb-GUI-Client.git
 cd DynamoDb-GUI-Client

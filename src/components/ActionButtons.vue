@@ -23,6 +23,8 @@ export default class ActionButtons extends Vue {
   justify-content center
 
 .el-button
-  width 100px
+  min-width 100px
   margin-top 20px
+  padding-left 18px
+  padding-right 18px
 </style>

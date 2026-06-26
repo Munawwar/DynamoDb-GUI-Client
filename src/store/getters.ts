@@ -10,6 +10,7 @@ const filteredTables = (state: RootState) => {
 };
 
 const loading = (state: RootState) => state.loading;
+const tableListLoading = (state: RootState) => state.tableListLoading;
 const tables = (state: RootState) => state.tables;
 const response = (state: RootState) => state.response;
 const currentTable = (state: RootState) => state.currentTable;
@@ -20,6 +21,7 @@ const filterText = (state: RootState) => state.filterText;
 
 const getters: GetterTree<RootState, RootState> = {
   loading,
+  tableListLoading,
   tables,
   response,
   currentTable,

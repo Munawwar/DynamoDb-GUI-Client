@@ -17,4 +17,5 @@ export interface RootState {
     message: string;
   };
   loading: boolean;
+  tableListLoading: boolean;
 }

@@ -1,12 +1,10 @@
 <template lang="pug">
-  el-row(class="sidebar")
+  el-row(class="sidebar" v-loading="tableListLoading" element-loading-background="rgba(0, 0, 0, 0)")
     SidebarDatabases(
       v-if="!currentDb"
       :databaseList="database.list"
-      :profileList="isDesktop ? database.profiles : []"
       :removeHandler="removeDbFromStorage"
       :elementHandler="getCurrentDb"
-      :profileHandler="getCurrentProfile"
     )
     SidebarTables(
       v-if="currentDb"
@@ -46,8 +44,8 @@ export default class Sidebar extends Vue {
   @Getter private currentTable!: string;
   @Getter private filteredTables!: string[];
   @Getter private filterText!: string;
+  @Getter private tableListLoading!: boolean;
   @Action private getCurrentDb: any;
-  @Action private getCurrentProfile!: (name: string) => Promise<void>;
   @Action private getDbTables: any;
   @Action private getCurrentTable: any;
   @Mutation private filterTextChange: any;

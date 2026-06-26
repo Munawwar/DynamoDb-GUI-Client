@@ -49,7 +49,7 @@
             :cancelText="'Clear'"
           )
         el-tab-pane(v-if="isDesktop" label="AWS SSO")
-          el-form
+          el-form(class="sso-form")
             el-form-item(label="AWS Profile")
               el-select(
                 :value="selectedProfile"
@@ -128,8 +128,9 @@ export default class ConnectDatabase extends Vue {
 .note
   width 80%
   max-width: 700px;
-  margin 30px auto
+  margin 20px auto
   text-align center
+  color #c7d0dc
 
 a
   color #00adff
@@ -147,5 +148,8 @@ a
 .el-form
   width 100%
   border-radius 2px
-  height 65vh
+  min-height 360px
+
+.sso-form
+  min-height 180px
 </style>

@@ -11,7 +11,7 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 ### [Release v3.5.3](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.5.3)
 
-![Logo](src/assets/git-logo.png)
+![Logo](src/assets/dynamodb-gui-logo.png)
 
 :eyes:
 ![Logo](https://i.imgur.com/24jcqzs.png)

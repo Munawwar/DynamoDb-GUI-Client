@@ -5,7 +5,11 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors)
 
-## Desktop GUI client for DynamoDB
+## Web App (AWS SSO unsupported)
+
+https://dynamodb.pages.dev
+
+## Desktop App
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 

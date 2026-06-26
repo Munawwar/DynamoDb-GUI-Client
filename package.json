@@ -1,7 +1,7 @@
 {
   "name": "dynamodb-gui-client",
   "desktopName": "com.dynamodb.guiclient",
-  "version": "3.5.4",
+  "version": "3.5.5",
   "description": "DynamoDb-GUI-Client",
   "author": {
     "name": "Misak Poghosyan",
@@ -78,5 +78,8 @@
       ]
     }
   },
-  "repository": "Arattian/DynamoDb-GUI-Client"
+  "repository": "Arattian/DynamoDb-GUI-Client",
+  "overrides": {
+    "deasync": "0.1.31"
+  }
 }

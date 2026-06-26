@@ -9,9 +9,9 @@ This project is a fork maintained from the original DynamoDb-GUI-Client
 
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/Arattian/DynamoDb-GUI-Client/blob/master/LICENSE)
 
-### [Release v3.5.3](https://github.com/Munawwar/DynamoDb-GUI-Client/releases/tag/v3.5.3)
+### [Latest release](https://github.com/Munawwar/DynamoDb-GUI-Client/releases)
 
-![Logo](src/assets/dynamodb-gui-logo.png)
+<img src="src/assets/dynamodb-gui-logo.png" alt="DynamoDb GUI logo" width="160">
 
 :eyes:
 ![Logo](https://i.imgur.com/24jcqzs.png)
@@ -58,15 +58,3 @@ npm run package
     - [x] Delete Table
   - Filter by attribute value
   - Filter by attribute name
-
-## Contributors
-
-Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-<!-- prettier-ignore -->
-<table><tr><td align="center"><a href="https://github.com/Arattian"><img src="https://avatars3.githubusercontent.com/u/36269636?v=4" width="100px;" alt="Misak Poghosyan"/><br /><sub><b>Misak Poghosyan</b></sub></a><br /><a href="#infra-Arattian" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/Arattian/DynamoDb-GUI-Client/commits?author=Arattian" title="Tests">⚠️</a> <a href="#talk-Arattian" title="Talks">📢</a> <a href="#tool-Arattian" title="Tools">🔧</a> <a href="#maintenance-Arattian" title="Maintenance">🚧</a> <a href="https://github.com/Arattian/DynamoDb-GUI-Client/commits?author=Arattian" title="Code">💻</a></td><td align="center"><a href="https://github.com/gevorggalstyan"><img src="https://avatars2.githubusercontent.com/u/2598355?v=4" width="100px;" alt="Gevorg A. Galstyan"/><br /><sub><b>Gevorg A. Galstyan</b></sub></a><br /><a href="#ideas-gevorggalstyan" title="Ideas, Planning, & Feedback">🤔</a> <a href="#infra-gevorggalstyan" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#maintenance-gevorggalstyan" title="Maintenance">🚧</a> <a href="#talk-gevorggalstyan" title="Talks">📢</a> <a href="https://github.com/Arattian/DynamoDb-GUI-Client/commits?author=gevorggalstyan" title="Code">💻</a></td></tr></table>
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
-This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!

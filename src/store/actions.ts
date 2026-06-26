@@ -1,15 +1,16 @@
 import { ActionContext, ActionTree } from 'vuex';
 import { RootState } from './types';
-import { resolveProfile, formatLoginCommand } from '@/utils/desktop';
+import { getLoginCommand, resolveProfile } from '@/utils/desktop';
 
 function expiresSoon(expiresAt: string) {
   return !expiresAt || Date.parse(expiresAt) - Date.now() < 5 * 60 * 1000;
 }
 
-function getCredentialError(err: any, profile: string) {
+async function getCredentialError(err: any, profile: string) {
   const message = (err && err.message) || String(err);
+  const loginCommand = await getLoginCommand(profile);
   return {
-    message: `${message}\nRun \`${formatLoginCommand(profile)}\` in a terminal, then reconnect.`,
+    message: `${message}\n${loginCommand}, then reconnect.`,
   };
 }
 
@@ -22,7 +23,7 @@ async function getCurrentDb(
     commit('database/setSelectedProfile', name, { root: true });
     commit('setDBInstancesFromData', { connection });
   } catch (err) {
-    commit('showResponse', getCredentialError(err, name));
+    commit('showResponse', await getCredentialError(err, name));
     return;
   }
   localStorage.setItem('__last_profile', name);
@@ -63,7 +64,7 @@ async function ensureCurrentDb(
     commit('setDBInstancesFromData', { connection, preserveState: true });
     return true;
   } catch (err) {
-    commit('showResponse', getCredentialError(err, state.currentDb));
+    commit('showResponse', await getCredentialError(err, state.currentDb));
     return false;
   }
 }

@@ -1,11 +1,28 @@
 const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const { execFile } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
-const awsBin = process.platform === 'win32' ? 'aws.cmd' : 'aws';
 const desktopName = 'com.dynamodb.guiclient';
 const appIcon = path.join(__dirname, '..', 'build', 'icons', '512x512.png');
 const isDevelopment = !app.isPackaged && !!process.env.ELECTRON_START_URL;
+const awsCliInstallUrl = 'https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html';
+const awsCandidates = process.platform === 'win32'
+  ? [
+    'aws.cmd',
+    'aws.exe',
+    path.join(process.env.ProgramFiles || 'C:\\Program Files', 'Amazon', 'AWSCLIV2', 'aws.exe'),
+    path.join(process.env['ProgramFiles(x86)'] || 'C:\\Program Files (x86)', 'Amazon', 'AWSCLIV2', 'aws.exe'),
+    path.join(process.env.LocalAppData || '', 'Programs', 'Amazon', 'AWSCLIV2', 'aws.exe'),
+  ]
+  : [
+    'aws',
+    '/usr/local/bin/aws',
+    '/opt/homebrew/bin/aws',
+    '/usr/bin/aws',
+    '/snap/bin/aws',
+  ];
+let awsBinPromise;
 
 app.disableHardwareAcceleration();
 app.commandLine.appendSwitch('disable-gpu');
@@ -14,9 +31,38 @@ if (process.platform === 'linux') {
   app.setDesktopName(desktopName);
 }
 
-function runAws(args) {
+async function runAws(args) {
+  awsBinPromise = awsBinPromise || (async () => {
+    let wrongVersion = '';
+    for (const command of awsCandidates.filter(Boolean)) {
+      if (path.isAbsolute(command) && !fs.existsSync(command)) {
+        continue;
+      }
+      const version = await new Promise((resolve) => {
+        execFile(command, ['--version'], { windowsHide: true }, (error, stdout, stderr) => {
+          resolve(error ? '' : `${stdout}${stderr}`.trim());
+        });
+      });
+      if (!version) {
+        continue;
+      }
+      if (/^aws-cli\/2\./.test(version)) {
+        return command;
+      }
+      wrongVersion = wrongVersion || version;
+    }
+    if (wrongVersion) {
+      throw new Error(
+        `AWS CLI v2 is required, but DynamoDbGUI found: ${wrongVersion}. Install AWS CLI v2 from ${awsCliInstallUrl}, then restart DynamoDbGUI.`,
+      );
+    }
+    throw new Error(
+      `AWS CLI v2 was not found. Install it from ${awsCliInstallUrl}, then restart DynamoDbGUI.`,
+    );
+  })();
+  const awsBin = await awsBinPromise;
   return new Promise((resolve, reject) => {
-    execFile(awsBin, args, { maxBuffer: 1024 * 1024 }, (error, stdout, stderr) => {
+    execFile(awsBin, args, { maxBuffer: 1024 * 1024, windowsHide: true }, (error, stdout, stderr) => {
       if (error) {
         reject(new Error((stderr || stdout || error.message).trim()));
         return;
@@ -111,6 +157,16 @@ function createWindow() {
 app.whenReady().then(() => {
   ipcMain.handle('aws:list-profiles', listProfiles);
   ipcMain.handle('aws:resolve-profile', resolveProfile);
+  ipcMain.handle('aws:get-login-command', (_, name) => {
+    const command = `aws sso login --profile "${String(name || '').replace(/"/g, '\\"')}"`;
+    if (process.platform === 'win32') {
+      return `Open PowerShell and run: ${command}`;
+    }
+    if (process.platform === 'darwin') {
+      return `Open Terminal and run: ${command}`;
+    }
+    return `Run in a terminal: ${command}`;
+  });
   createWindow();
 
   app.on('activate', () => {

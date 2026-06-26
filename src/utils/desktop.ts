@@ -28,6 +28,6 @@ export function resolveProfile(name: string): Promise<AwsConnection> {
   return getDesktopApi().resolveProfile(name);
 }
 
-export function formatLoginCommand(name: string) {
-  return `aws sso login --profile ${name}`;
+export function getLoginCommand(name: string): Promise<string> {
+  return getDesktopApi().getLoginCommand(name);
 }

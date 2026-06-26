@@ -26,6 +26,7 @@ beforeEach(() => {
   window.electronAPI = {
     listProfiles: jest.fn().mockResolvedValue(profiles),
     resolveProfile: jest.fn().mockResolvedValue(connection),
+    getLoginCommand: jest.fn().mockResolvedValue('Run aws sso login, then reconnect.'),
   };
 });
 

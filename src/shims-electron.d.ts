@@ -5,6 +5,7 @@ declare global {
     electronAPI?: {
       listProfiles: () => Promise<AwsProfile[]>;
       resolveProfile: (name: string) => Promise<AwsConnection>;
+      getLoginCommand: (name: string) => Promise<string>;
     };
   }
 }

@@ -7,6 +7,7 @@ const state: RootState = {
   currentTable: '',
   currentDb: '',
   currentRegion: '',
+  connectionType: '',
   credentialsExpireAt: '',
   tables: [],
   filterText: '',

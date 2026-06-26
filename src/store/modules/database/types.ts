@@ -1,8 +1,37 @@
+import { AwsProfile } from '@/utils/desktop';
+
+export interface SingleDatabaseModuleState {
+  name: string;
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+  region: string;
+  maxRetries: number;
+}
+
 export interface DatabaseModuleState {
-  list: Array<{
-    name: string;
-    region: string;
-  }>;
+  list: SingleDatabaseModuleState[];
+  profiles: AwsProfile[];
   selectedProfile: string;
   loadingProfiles: boolean;
+  submitForm: SubmitForm;
+  regionList: string[];
+  showEditModal: boolean;
+}
+
+export interface SubmitForm {
+  configs: DbConfigs;
+  name: string;
+  color: string;
+  createdAt: number;
+}
+
+export interface DbConfigs {
+  accessKeyId: string;
+  secretAccessKey: string;
+  sessionToken?: string;
+  region: string;
+  endpoint: string;
+  maxRetries: number;
+  dynamoDbCrc32: boolean;
 }

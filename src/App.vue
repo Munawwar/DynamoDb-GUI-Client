@@ -1,26 +1,30 @@
 <template lang="pug">
   #app
-    rs-panes(
-      split-to="columns"
-      :allow-resize="true"
-      :max-size="500"
-      :min-size="150"
-      :size="220"
-      resizerColor="#121820"
-      :resizerBorderThickness="1"
-      )
-      Sidebar(class="sidebar" slot="firstPane")
-      Main(class="main" slot="secondPane")
-    TableModals
-    RecordModals
+    MasterPasswordLock(v-if="isLocked")
+    template(v-else)
+      rs-panes(
+        split-to="columns"
+        :allow-resize="true"
+        :max-size="500"
+        :min-size="150"
+        :size="150"
+        resizerColor="#121820"
+        :resizerBorderThickness="1"
+        )
+        Sidebar(class="sidebar" slot="firstPane")
+        Main(class="main" slot="secondPane")
+      TableModals
+      RecordModals
 </template>
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { Getter } from 'vuex-class';
 import Main from './containers/Main.vue';
 import Sidebar from './containers/Sidebar.vue';
 import TableModals from './containers/TableModals.vue';
 import RecordModals from './containers/RecordModals.vue';
+import MasterPasswordLock from './components/MasterPasswordLock.vue';
 
 @Component({
   name: 'app',
@@ -29,9 +33,12 @@ import RecordModals from './containers/RecordModals.vue';
     Sidebar,
     TableModals,
     RecordModals,
+    MasterPasswordLock,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  @Getter('masterPassword/isLocked') private isLocked!: boolean;
+}
 </script>
 
 <style lang="stylus">

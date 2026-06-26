@@ -9,24 +9,13 @@ function getEndpoint(region: string) {
     : `https://dynamodb.${region}.amazonaws.com`;
 }
 
-function getDbConfig(connection: AwsConnection) {
-  return {
-    region: connection.region,
-    accessKeyId: connection.accessKeyId,
-    secretAccessKey: connection.secretAccessKey,
-    sessionToken: connection.sessionToken,
-    endpoint: getEndpoint(connection.region),
-    maxRetries: 1,
-    dynamoDbCrc32: false,
-  };
-}
-
 function initialState(state: RootState) {
   state.dbInstance = new DynamoDB();
   state.dbClient = new DynamoDB.DocumentClient();
   state.currentTable = '';
   state.currentDb = '';
   state.currentRegion = '';
+  state.connectionType = '';
   state.credentialsExpireAt = '';
   state.tables = [];
   state.filterText = '';
@@ -65,16 +54,36 @@ function notified(state: RootState) {
   };
 }
 
-function setDBInstancesFromData(
+function setDBInstancesFromData(state: RootState, database: any) {
+  state.dbInstance = new DynamoDB(database.configs);
+  state.dbClient = new DynamoDB.DocumentClient(database.configs);
+  state.currentDb = database.name;
+  state.currentRegion = database.configs.region;
+  state.connectionType = 'saved';
+  state.credentialsExpireAt = '';
+  state.tables = [];
+  state.currentTable = '';
+}
+
+function setDBInstancesFromProfile(
   state: RootState,
   payload: { connection: AwsConnection; preserveState?: boolean },
 ) {
   const { connection, preserveState } = payload;
-  const configs = getDbConfig(connection);
+  const configs = {
+    region: connection.region,
+    accessKeyId: connection.accessKeyId,
+    secretAccessKey: connection.secretAccessKey,
+    sessionToken: connection.sessionToken,
+    endpoint: getEndpoint(connection.region),
+    maxRetries: 1,
+    dynamoDbCrc32: false,
+  };
   state.dbInstance = new DynamoDB(configs);
   state.dbClient = new DynamoDB.DocumentClient(configs);
   state.currentDb = connection.name;
   state.currentRegion = connection.region;
+  state.connectionType = 'profile';
   state.credentialsExpireAt = connection.expiration || '';
   if (!preserveState) {
     state.tables = [];
@@ -88,6 +97,7 @@ function removeDbFromState(state: RootState) {
   state.currentTable = '';
   state.currentDb = '';
   state.currentRegion = '';
+  state.connectionType = '';
   state.credentialsExpireAt = '';
   state.dbInstance = new DynamoDB();
   state.dbClient = new DynamoDB.DocumentClient();
@@ -128,6 +138,7 @@ const mutations: MutationTree<RootState> = {
   initialState,
   showResponse,
   setDBInstancesFromData,
+  setDBInstancesFromProfile,
   removeDbFromState,
   setTableNames,
   deleteFromList,

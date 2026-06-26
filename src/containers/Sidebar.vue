@@ -3,8 +3,10 @@
     SidebarDatabases(
       v-if="!currentDb"
       :databaseList="database.list"
+      :profileList="isDesktop ? database.profiles : []"
+      :removeHandler="removeDbFromStorage"
       :elementHandler="getCurrentDb"
-      :currentDb="currentDb"
+      :profileHandler="getCurrentProfile"
     )
     SidebarTables(
       v-if="currentDb"
@@ -17,9 +19,10 @@
       :currentTable="currentTable"
       :filterTextChange="filterTextChange"
       :filterText="filterText"
-      :disconnect="removeDbFromState"
+      :initialState="initialState"
       :toggleCreateModal="toggleCreateModal"
       :toggleDeleteModal="toggleDeleteModal"
+      :toggleEditModal="toggleEditModal"
     )
 </template>
 
@@ -30,7 +33,7 @@ import { DatabaseModuleState } from '../store/modules/database/types';
 import SidebarDatabases from '../components/SidebarDatabases.vue';
 import SidebarTables from '../components/SidebarTables.vue';
 
-const namespace = 'database';
+const namespace: string = 'database';
 
 @Component({
   components: {
@@ -43,30 +46,31 @@ export default class Sidebar extends Vue {
   @Getter private currentTable!: string;
   @Getter private filteredTables!: string[];
   @Getter private filterText!: string;
-  @Action private getCurrentDb!: (name: string) => Promise<void>;
-  @Action private getDbTables!: (tableName?: string) => Promise<void>;
-  @Action private getCurrentTable!: (name: string) => void;
-  @Mutation private filterTextChange!: (value: string) => void;
-  @Mutation private removeDbFromState!: () => void;
-  @Mutation('setSelectedProfile', { namespace }) private setSelectedProfile!: (value: string) => void;
+  @Action private getCurrentDb: any;
+  @Action private getCurrentProfile!: (name: string) => Promise<void>;
+  @Action private getDbTables: any;
+  @Action private getCurrentTable: any;
+  @Mutation private filterTextChange: any;
+  @Mutation private initialState: any;
   @State(namespace) private database!: DatabaseModuleState;
+  @Action('removeDbFromStorage', { namespace })
+  private removeDbFromStorage: any;
+  @Action('getDbList', { namespace }) private getDbList: any;
   @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
+  @Mutation('toggleEditModal', { namespace }) private toggleEditModal: any;
   @Mutation('toggleCreateModal', { namespace: 'table' })
-  private toggleCreateModal!: () => void;
+  private toggleCreateModal: any;
   @Mutation('toggleDeleteModal', { namespace: 'table' })
-  private toggleDeleteModal!: () => void;
+  private toggleDeleteModal: any;
+  private get isDesktop() {
+    return !!window.electronAPI;
+  }
 
-  private async created() {
-    await this.loadProfiles();
-    if (!this.database.selectedProfile) {
-      return;
+  private created() {
+    this.getDbList();
+    if (this.isDesktop) {
+      this.loadProfiles();
     }
-    this.setSelectedProfile(this.database.selectedProfile);
-    const lastProfile = localStorage.getItem('__last_profile');
-    const nextProfile = this.database.list.some((profile) => profile.name === lastProfile)
-      ? lastProfile!
-      : this.database.selectedProfile;
-    this.getCurrentDb(nextProfile);
   }
 }
 </script>

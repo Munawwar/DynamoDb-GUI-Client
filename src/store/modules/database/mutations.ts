@@ -1,24 +1,83 @@
 import { MutationTree } from 'vuex';
-import { DatabaseModuleState } from './types';
+import { AwsProfile } from '@/utils/desktop';
+import { DatabaseModuleState, SingleDatabaseModuleState } from './types';
 
-function setProfiles(
-  state: DatabaseModuleState,
-  profiles: Array<{ name: string; region: string }>,
-) {
-  state.list = profiles;
+function setToDefault(state: DatabaseModuleState) {
+  state.submitForm.configs = {
+    accessKeyId: '',
+    secretAccessKey: '',
+    region: '',
+    endpoint: 'http://localhost:',
+    maxRetries: 1,
+    dynamoDbCrc32: false,
+  };
+  state.submitForm.name = 'Database ' + (state.list.length + 1);
+  state.showEditModal = false;
 }
 
-function setSelectedProfile(state: DatabaseModuleState, profile: string) {
-  state.selectedProfile = profile;
+function setDbList(
+  state: DatabaseModuleState,
+  newDbList: SingleDatabaseModuleState[],
+) {
+  state.list = newDbList;
+}
+
+function setProfiles(state: DatabaseModuleState, profiles: AwsProfile[]) {
+  state.profiles = profiles;
+}
+
+function setSelectedProfile(state: DatabaseModuleState, selectedProfile: string) {
+  state.selectedProfile = selectedProfile;
 }
 
 function setLoadingProfiles(state: DatabaseModuleState, loadingProfiles: boolean) {
   state.loadingProfiles = loadingProfiles;
 }
 
+function correctInputs(state: DatabaseModuleState, serviceType: string) {
+  switch (serviceType) {
+    case 'remote':
+      if (state.submitForm.configs.region === 'cn-north-1' || state.submitForm.configs.region === 'cn-northwest-1') {
+        state.submitForm.configs.endpoint = `https://dynamodb.${
+          state.submitForm.configs.region
+        }.amazonaws.com.cn`;
+      } else {
+        state.submitForm.configs.endpoint = `https://dynamodb.${
+          state.submitForm.configs.region
+        }.amazonaws.com`;
+      }
+      state.submitForm.name = state.submitForm.name || `Database ${state.list.length + 1}`;
+      break;
+    case 'local':
+      // state.submitForm.configs.region = 'localhost';
+       // state.submitForm.configs.accessKeyId = Math.random()
+       //   .toString(36)
+       //   .substring(7);
+       // state.submitForm.configs.secretAccessKey = Math.random()
+       //   .toString(36)
+       //   .substring(7);
+      state.submitForm.name =
+        state.submitForm.name || `Database ${state.list.length + 1}`;
+      break;
+  }
+}
+
+function toggleEditModal(state: DatabaseModuleState) {
+  state.showEditModal = !state.showEditModal;
+}
+
+function fillEditFormFromData(state: DatabaseModuleState, database: any) {
+  state.submitForm = Object.assign({}, state.submitForm, database);
+}
+
 const mutations: MutationTree<DatabaseModuleState> = {
+  correctInputs,
+  setToDefault,
+  setDbList,
   setProfiles,
   setSelectedProfile,
   setLoadingProfiles,
+  toggleEditModal,
+  fillEditFormFromData,
 };
 export default mutations;

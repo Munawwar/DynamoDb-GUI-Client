@@ -7,6 +7,7 @@ export interface RootState {
   currentTable: any;
   currentDb: string;
   currentRegion: string;
+  connectionType: '' | 'saved' | 'profile';
   credentialsExpireAt: string;
   dbInstance: DynamoDB;
   dbClient: DocumentClient;

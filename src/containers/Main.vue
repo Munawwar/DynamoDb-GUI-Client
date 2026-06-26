@@ -2,7 +2,14 @@
   el-col(:span="24" class="main" v-loading="loading" element-loading-background="rgba(0, 0, 0, 0)")  
     ConnectDatabase(
       v-if="!currentDb"
-      :profiles="database.list"
+      :configs="database.submitForm.configs"
+      :regionList="database.regionList"
+      :submitForm="database.submitForm"
+      :submitRemoteForm="submitRemoteForm"
+      :submitLocalForm="submitLocalForm"
+      :setToDefault="setToDefault"
+      :isDesktop="isDesktop"
+      :profiles="database.profiles"
       :selectedProfile="database.selectedProfile"
       :selectProfile="setSelectedProfile"
       :connectProfile="connectProfile"
@@ -14,6 +21,7 @@
           TableRecords
         el-tab-pane(label="Meta" name="meta")
           TableMeta
+    DatabaseModals(v-if="database.showEditModal")
     span(v-if="response.message")
 </template>
 
@@ -21,17 +29,18 @@
 import { Vue, Component } from 'vue-property-decorator';
 import { Getter, Action, Mutation, State } from 'vuex-class';
 import ConnectDatabase from '../components/ConnectDatabase.vue';
+import DatabaseModals from './DatabaseModals.vue';
 import TableRecords from './TableRecords.vue';
 import TableMeta from './TableMeta.vue';
 import { DatabaseModuleState } from '../store/modules/database/types';
-
-const namespace = 'database';
+const namespace: string = 'database';
 
 @Component({
   components: {
     ConnectDatabase,
     TableRecords,
     TableMeta,
+    DatabaseModals,
   },
 })
 export default class Main extends Vue {
@@ -43,14 +52,20 @@ export default class Main extends Vue {
   @Getter private loading!: boolean;
   @Mutation private notified: any;
   @State(namespace) private database!: DatabaseModuleState;
+  @Action('submitRemoteForm', { namespace }) private submitRemoteForm: any;
+  @Action('submitLocalForm', { namespace }) private submitLocalForm: any;
   @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
-  @Action private getCurrentDb!: (name: string) => Promise<void>;
+  @Action private getCurrentProfile!: (name: string) => Promise<void>;
+  @Mutation('setToDefault', { namespace }) private setToDefault: any;
   @Mutation('setSelectedProfile', { namespace }) private setSelectedProfile!: (name: string) => void;
 
-  private connectProfile() {
-    this.database.selectedProfile && this.getCurrentDb(this.database.selectedProfile);
+  private get isDesktop() {
+    return !!window.electronAPI;
   }
 
+  private connectProfile() {
+    this.database.selectedProfile && this.getCurrentProfile(this.database.selectedProfile);
+  }
   private updated() {
     if (this.response.message) {
       this.$notify({

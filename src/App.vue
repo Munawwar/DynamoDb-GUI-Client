@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
-import { Getter, Mutation } from 'vuex-class';
+import { Getter } from 'vuex-class';
 import Main from './containers/Main.vue';
 import Sidebar from './containers/Sidebar.vue';
 import TableModals from './containers/TableModals.vue';

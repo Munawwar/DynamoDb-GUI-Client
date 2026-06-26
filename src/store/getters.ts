@@ -14,6 +14,8 @@ const tables = (state: RootState) => state.tables;
 const response = (state: RootState) => state.response;
 const currentTable = (state: RootState) => state.currentTable;
 const currentDb = (state: RootState) => state.currentDb;
+const currentRegion = (state: RootState) => state.currentRegion;
+const credentialsExpireAt = (state: RootState) => state.credentialsExpireAt;
 const filterText = (state: RootState) => state.filterText;
 
 const getters: GetterTree<RootState, RootState> = {
@@ -22,6 +24,8 @@ const getters: GetterTree<RootState, RootState> = {
   response,
   currentTable,
   currentDb,
+  currentRegion,
+  credentialsExpireAt,
   filterText,
   filteredTables,
 };

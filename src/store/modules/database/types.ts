@@ -1,3 +1,5 @@
+import { AwsProfile } from '@/utils/desktop';
+
 export interface SingleDatabaseModuleState {
   name: string;
   accessKeyId: string;
@@ -9,6 +11,9 @@ export interface SingleDatabaseModuleState {
 
 export interface DatabaseModuleState {
   list: SingleDatabaseModuleState[];
+  profiles: AwsProfile[];
+  selectedProfile: string;
+  loadingProfiles: boolean;
   submitForm: SubmitForm;
   regionList: string[];
   showEditModal: boolean;

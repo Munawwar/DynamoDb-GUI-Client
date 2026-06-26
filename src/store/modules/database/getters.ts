@@ -5,7 +5,7 @@ import { RootState } from '@/store/types';
 const validateForm = (state: DatabaseModuleState) => {
   const obj: any = state.submitForm.configs;
   for (const key in obj) {
-    if (!obj[key] && key !== 'dynamoDbCrc32') {
+    if (!obj[key] && key !== 'dynamoDbCrc32' && key !== 'sessionToken') {
       return;
     }
   }

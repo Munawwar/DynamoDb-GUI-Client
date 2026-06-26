@@ -1,6 +1,19 @@
 import { ActionContext, ActionTree } from 'vuex';
 import { RootState } from './types';
+import { getLoginCommand, resolveProfile } from '@/utils/desktop';
 import { decrypt } from '@/utils/crypto';
+
+function expiresSoon(expiresAt: string) {
+  return !expiresAt || Date.parse(expiresAt) - Date.now() < 5 * 60 * 1000;
+}
+
+async function getCredentialError(err: any, profile: string) {
+  const message = (err && err.message) || String(err);
+  const loginCommand = await getLoginCommand(profile);
+  return {
+    message: `${message}\n${loginCommand}, then reconnect.`,
+  };
+}
 
 async function getCurrentDb(
   { commit, dispatch, rootState }: ActionContext<RootState, RootState>,
@@ -13,7 +26,7 @@ async function getCurrentDb(
     const decrypted = await decrypt(raw, mp.password, mp.salt);
     const database = JSON.parse(decrypted);
     commit('setDBInstancesFromData', database);
-  } catch {
+  } catch (err) {
     commit('showResponse', { message: 'Failed to decrypt database credentials.' });
     return;
   }
@@ -21,10 +34,29 @@ async function getCurrentDb(
   dispatch('getDbTables');
 }
 
+async function getCurrentProfile(
+  { commit, dispatch }: ActionContext<RootState, RootState>,
+  name: string,
+) {
+  try {
+    const connection = await resolveProfile(name);
+    commit('database/setSelectedProfile', name, { root: true });
+    commit('setDBInstancesFromProfile', { connection });
+  } catch (err) {
+    commit('showResponse', await getCredentialError(err, name));
+    return;
+  }
+  localStorage.setItem('__last_profile', name);
+  dispatch('getDbTables');
+}
+
 async function getDbTables(
   { state, commit, dispatch }: ActionContext<RootState, RootState>,
   tableToGet: string,
 ) {
+  if (!(await dispatch('ensureCurrentDb'))) {
+    return;
+  }
   let data;
   try {
     data = await getTablesPaginated(state);
@@ -38,6 +70,22 @@ async function getDbTables(
   } else {
     commit('setTableNames', data.TableNames);
     tableToGet && dispatch('getCurrentTable', tableToGet);
+  }
+}
+
+async function ensureCurrentDb(
+  { state, commit }: ActionContext<RootState, RootState>,
+) {
+  if (!state.currentDb || state.connectionType !== 'profile' || !expiresSoon(state.credentialsExpireAt)) {
+    return !!state.currentDb;
+  }
+  try {
+    const connection = await resolveProfile(state.currentDb);
+    commit('setDBInstancesFromProfile', { connection, preserveState: true });
+    return true;
+  } catch (err) {
+    commit('showResponse', await getCredentialError(err, state.currentDb));
+    return false;
   }
 }
 
@@ -77,6 +125,8 @@ function getCurrentTable(
 
 const actions: ActionTree<RootState, RootState> = {
   getCurrentDb,
+  getCurrentProfile,
+  ensureCurrentDb,
   getCurrentTable,
   deleteTableFromStore,
   getDbTables,

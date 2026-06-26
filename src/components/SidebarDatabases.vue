@@ -11,6 +11,17 @@
         span {{db.name}}
       .item-delete(@click="toggleDeleteModal(db)")
         i(class="el-icon-delete delete")
+    template(v-if="profileList.length")
+      el-row(class="title") AWS PROFILES
+      .list-item(
+        v-for="profile in profileList"
+        :key="`profile-${profile.name}`"
+        )
+        .item-content(@click='profileHandler(profile.name)')
+          v-icon(name="database" class="db-icon")
+          .meta
+            span {{profile.name}}
+            small {{profile.region || 'no region'}}
 </template>
 
 <script lang="ts">
@@ -20,7 +31,9 @@ export default class SidebarDatabases extends Vue {
   public $confirm: any;
   @Prop(Function) private removeHandler: any;
   @Prop(Function) private elementHandler: any;
+  @Prop(Function) private profileHandler: any;
   @Prop(Array) private databaseList!: any[];
+  @Prop(Array) private profileList!: Array<{ name: string; region: string }>;
   private toggleDeleteModal(db: any) {
     this.$confirm(
       'Are you sure, you want to delete database from list?',
@@ -83,4 +96,18 @@ export default class SidebarDatabases extends Vue {
   overflow hidden
   width 80%
   line-height 20px
+
+.meta
+  display flex
+  flex-direction column
+  margin-left 5px
+  margin-right 5px
+  overflow hidden
+
+.meta span
+  overflow hidden
+  line-height 20px
+
+.meta small
+  color #8d96a5
 </style>

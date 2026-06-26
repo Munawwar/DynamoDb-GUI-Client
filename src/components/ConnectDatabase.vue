@@ -48,14 +48,48 @@
             :confirmText="'Connect'"
             :cancelText="'Clear'"
           )
+        el-tab-pane(v-if="isDesktop" label="AWS SSO")
+          el-form
+            el-form-item(label="AWS Profile")
+              el-select(
+                :value="selectedProfile"
+                placeholder="Select AWS profile"
+                filterable
+                @change="selectProfile"
+                @keyup.enter.native="connectProfile"
+              )
+                el-option(
+                  v-for="profile in profiles"
+                  :key="profile.name"
+                  :label="`${profile.name} (${profile.region || 'no region'})`"
+                  :value="profile.name"
+                )
+            el-alert(
+              v-if="!profiles.length"
+              title="No SSO profiles found in ~/.aws/config."
+              type="warning"
+              :closable="false"
+              show-icon
+            )
+            el-alert(
+              v-else
+              title="Run aws sso login for the selected profile when it needs a fresh session."
+              type="info"
+              :closable="false"
+              show-icon
+            )
+          ActionButtons(
+            :cancelHandler="refreshProfiles"
+            :confirmHandler="connectProfile"
+            :confirmText="'Connect'"
+            :cancelText="'Reload Profiles'"
+          )
 </template>
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
 import { DbConfigs, SubmitForm } from '../store/modules/database/types';
 import ActionButtons from './ActionButtons.vue';
-
-const namespace: string = 'database';
 
 @Component({
   components: {
@@ -64,12 +98,18 @@ const namespace: string = 'database';
 })
 export default class ConnectDatabase extends Vue {
   private inputType: string = 'password';
+  @Prop(Boolean) private isDesktop!: boolean;
   @Prop(Function) private submitRemoteForm: any;
   @Prop(Function) private submitLocalForm: any;
   @Prop(Function) private setToDefault: any;
+  @Prop(Function) private selectProfile!: (profile: string) => void;
+  @Prop(Function) private connectProfile!: () => void;
+  @Prop(Function) private refreshProfiles!: () => void;
   @Prop(Object) private submitForm!: SubmitForm;
   @Prop(Array) private regionList!: string[];
   @Prop(Object) private configs!: DbConfigs;
+  @Prop(Array) private profiles!: Array<{ name: string; region: string }>;
+  @Prop(String) private selectedProfile!: string;
 
   private mounted() {
     this.setToDefault();

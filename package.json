@@ -1,5 +1,6 @@
 {
   "name": "dynamodb-gui-client",
+  "desktopName": "com.dynamodb.guiclient",
   "version": "3.5.3",
   "description": "DynamoDb-GUI-Client",
   "author": {
@@ -9,7 +10,9 @@
   "scripts": {
     "build": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js build",
     "lint": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js lint",
-    "start": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js serve --port 5050 --open",
+    "package": "npm run build && electron-builder",
+    "start": "npm run build && env ELECTRON_OZONE_PLATFORM_HINT=x11 LIBGL_ALWAYS_SOFTWARE=1 electron . --no-sandbox --disable-gpu-sandbox",
+    "start:sandbox": "npm run build && electron .",
     "test:unit": "node --openssl-legacy-provider ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit --coverage"
   },
   "dependencies": {
@@ -26,12 +29,15 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.11",
+    "@types/node": "^10.17.60",
     "@vue/cli-plugin-babel": "3.5.3",
     "@vue/cli-plugin-typescript": "3.5.3",
     "@vue/cli-plugin-unit-jest": "3.5.3",
     "@vue/cli-service": "3.5.3",
     "@vue/test-utils": "^1.0.0-beta.29",
     "babel-core": "^7.0.0-bridge.0",
+    "electron": "^42.5.0",
+    "electron-builder": "^26.15.3",
     "element-theme-dark": "^1.0.3",
     "pug": "^2.0.3",
     "pug-plain-loader": "^1.0.0",
@@ -52,5 +58,25 @@
     "gui"
   ],
   "license": "MIT",
+  "main": "electron/main.js",
+  "build": {
+    "appId": "com.dynamodb.guiclient",
+    "productName": "DynamoDbGUI",
+    "asar": true,
+    "files": [
+      "build/icons/**/*",
+      "dist/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "category": "Development",
+      "icon": "build/icons",
+      "syncDesktopName": true,
+      "target": [
+        "AppImage"
+      ]
+    }
+  },
   "repository": "Arattian/DynamoDb-GUI-Client"
 }

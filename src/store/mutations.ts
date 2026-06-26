@@ -1,12 +1,22 @@
 import { MutationTree } from 'vuex';
 import { RootState } from './types';
 import DynamoDB from 'aws-sdk/clients/dynamodb';
+import { AwsConnection } from '@/utils/desktop';
+
+function getEndpoint(region: string) {
+  return region === 'cn-north-1' || region === 'cn-northwest-1'
+    ? `https://dynamodb.${region}.amazonaws.com.cn`
+    : `https://dynamodb.${region}.amazonaws.com`;
+}
 
 function initialState(state: RootState) {
   state.dbInstance = new DynamoDB();
   state.dbClient = new DynamoDB.DocumentClient();
   state.currentTable = '';
   state.currentDb = '';
+  state.currentRegion = '';
+  state.connectionType = '';
+  state.credentialsExpireAt = '';
   state.tables = [];
   state.filterText = '';
   state.loading = false;
@@ -48,12 +58,49 @@ function setDBInstancesFromData(state: RootState, database: any) {
   state.dbInstance = new DynamoDB(database.configs);
   state.dbClient = new DynamoDB.DocumentClient(database.configs);
   state.currentDb = database.name;
+  state.currentRegion = database.configs.region;
+  state.connectionType = 'saved';
+  state.credentialsExpireAt = '';
   state.tables = [];
   state.currentTable = '';
 }
 
+function setDBInstancesFromProfile(
+  state: RootState,
+  payload: { connection: AwsConnection; preserveState?: boolean },
+) {
+  const { connection, preserveState } = payload;
+  const configs = {
+    region: connection.region,
+    accessKeyId: connection.accessKeyId,
+    secretAccessKey: connection.secretAccessKey,
+    sessionToken: connection.sessionToken,
+    endpoint: getEndpoint(connection.region),
+    maxRetries: 1,
+    dynamoDbCrc32: false,
+  };
+  state.dbInstance = new DynamoDB(configs);
+  state.dbClient = new DynamoDB.DocumentClient(configs);
+  state.currentDb = connection.name;
+  state.currentRegion = connection.region;
+  state.connectionType = 'profile';
+  state.credentialsExpireAt = connection.expiration || '';
+  if (!preserveState) {
+    state.tables = [];
+    state.currentTable = '';
+    state.filterText = '';
+  }
+}
+
 function removeDbFromState(state: RootState) {
   state.tables = [];
+  state.currentTable = '';
+  state.currentDb = '';
+  state.currentRegion = '';
+  state.connectionType = '';
+  state.credentialsExpireAt = '';
+  state.dbInstance = new DynamoDB();
+  state.dbClient = new DynamoDB.DocumentClient();
 }
 
 function setTableNames(state: RootState, tableNames: any[]) {
@@ -91,6 +138,7 @@ const mutations: MutationTree<RootState> = {
   initialState,
   showResponse,
   setDBInstancesFromData,
+  setDBInstancesFromProfile,
   removeDbFromState,
   setTableNames,
   deleteFromList,

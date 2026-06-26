@@ -8,6 +8,12 @@
       :submitRemoteForm="submitRemoteForm"
       :submitLocalForm="submitLocalForm"
       :setToDefault="setToDefault"
+      :isDesktop="isDesktop"
+      :profiles="database.profiles"
+      :selectedProfile="database.selectedProfile"
+      :selectProfile="setSelectedProfile"
+      :connectProfile="connectProfile"
+      :refreshProfiles="loadProfiles"
     )
     el-col(:span="24" v-if="currentTable")
       el-tabs(v-if="currentTable" v-model="activeTab" type="card" class="Main_el-tabs")
@@ -22,11 +28,11 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { Getter, Action, Mutation, State } from 'vuex-class';
-import { RootState } from '../store/types';
 import ConnectDatabase from '../components/ConnectDatabase.vue';
 import DatabaseModals from './DatabaseModals.vue';
 import TableRecords from './TableRecords.vue';
 import TableMeta from './TableMeta.vue';
+import { DatabaseModuleState } from '../store/modules/database/types';
 const namespace: string = 'database';
 
 @Component({
@@ -45,10 +51,21 @@ export default class Main extends Vue {
   @Getter private response!: { message: string; title: string; type: string };
   @Getter private loading!: boolean;
   @Mutation private notified: any;
-  @State(namespace) private database!: RootState;
+  @State(namespace) private database!: DatabaseModuleState;
   @Action('submitRemoteForm', { namespace }) private submitRemoteForm: any;
   @Action('submitLocalForm', { namespace }) private submitLocalForm: any;
+  @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
+  @Action private getCurrentProfile!: (name: string) => Promise<void>;
   @Mutation('setToDefault', { namespace }) private setToDefault: any;
+  @Mutation('setSelectedProfile', { namespace }) private setSelectedProfile!: (name: string) => void;
+
+  private get isDesktop() {
+    return !!window.electronAPI;
+  }
+
+  private connectProfile() {
+    this.database.selectedProfile && this.getCurrentProfile(this.database.selectedProfile);
+  }
   private updated() {
     if (this.response.message) {
       this.$notify({

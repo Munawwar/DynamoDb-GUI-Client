@@ -6,6 +6,9 @@ export interface RootState {
   filterText: string;
   currentTable: any;
   currentDb: string;
+  currentRegion: string;
+  connectionType: '' | 'saved' | 'profile';
+  credentialsExpireAt: string;
   dbInstance: DynamoDB;
   dbClient: DocumentClient;
   response: {

@@ -1,4 +1,5 @@
 import { MutationTree } from 'vuex';
+import { AwsProfile } from '@/utils/desktop';
 import { DatabaseModuleState, SingleDatabaseModuleState } from './types';
 
 function setToDefault(state: DatabaseModuleState) {
@@ -19,6 +20,18 @@ function setDbList(
   newDbList: SingleDatabaseModuleState[],
 ) {
   state.list = newDbList;
+}
+
+function setProfiles(state: DatabaseModuleState, profiles: AwsProfile[]) {
+  state.profiles = profiles;
+}
+
+function setSelectedProfile(state: DatabaseModuleState, selectedProfile: string) {
+  state.selectedProfile = selectedProfile;
+}
+
+function setLoadingProfiles(state: DatabaseModuleState, loadingProfiles: boolean) {
+  state.loadingProfiles = loadingProfiles;
 }
 
 function correctInputs(state: DatabaseModuleState, serviceType: string) {
@@ -61,6 +74,9 @@ const mutations: MutationTree<DatabaseModuleState> = {
   correctInputs,
   setToDefault,
   setDbList,
+  setProfiles,
+  setSelectedProfile,
+  setLoadingProfiles,
   toggleEditModal,
   fillEditFormFromData,
 };

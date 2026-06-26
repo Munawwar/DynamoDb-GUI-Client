@@ -85,7 +85,7 @@ export async function verifyPassword(password: string, salt: ArrayBuffer): Promi
   try {
     const result = await decrypt(stored, password, salt);
     return result === CHECK_PLAINTEXT;
-  } catch {
+  } catch (err) {
     return false;
   }
 }

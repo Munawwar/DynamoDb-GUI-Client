@@ -29,7 +29,7 @@ async function setupMasterPassword(
     const value = localStorage.getItem(key)!;
     try {
       JSON.parse(value);
-    } catch {
+    } catch (err) {
       continue;
     }
     const encrypted = await encrypt(value, password, salt);

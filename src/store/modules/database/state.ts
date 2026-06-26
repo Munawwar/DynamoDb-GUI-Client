@@ -2,6 +2,9 @@ import { DatabaseModuleState } from './types';
 
 const state: DatabaseModuleState = {
   list: [],
+  profiles: [],
+  selectedProfile: '',
+  loadingProfiles: false,
   regionList: [
     'us-east-1',
     'us-east-2',

@@ -3,8 +3,10 @@
     SidebarDatabases(
       v-if="!currentDb"
       :databaseList="database.list"
+      :profileList="isDesktop ? database.profiles : []"
       :removeHandler="removeDbFromStorage"
       :elementHandler="getCurrentDb"
+      :profileHandler="getCurrentProfile"
     )
     SidebarTables(
       v-if="currentDb"
@@ -27,7 +29,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import { Getter, Action, Mutation, State } from 'vuex-class';
-import { RootState } from '../store/types';
+import { DatabaseModuleState } from '../store/modules/database/types';
 import SidebarDatabases from '../components/SidebarDatabases.vue';
 import SidebarTables from '../components/SidebarTables.vue';
 
@@ -45,21 +47,30 @@ export default class Sidebar extends Vue {
   @Getter private filteredTables!: string[];
   @Getter private filterText!: string;
   @Action private getCurrentDb: any;
+  @Action private getCurrentProfile!: (name: string) => Promise<void>;
   @Action private getDbTables: any;
   @Action private getCurrentTable: any;
   @Mutation private filterTextChange: any;
   @Mutation private initialState: any;
-  @State(namespace) private database!: RootState;
+  @State(namespace) private database!: DatabaseModuleState;
   @Action('removeDbFromStorage', { namespace })
   private removeDbFromStorage: any;
   @Action('getDbList', { namespace }) private getDbList: any;
+  @Action('loadProfiles', { namespace }) private loadProfiles!: () => Promise<void>;
   @Mutation('toggleEditModal', { namespace }) private toggleEditModal: any;
   @Mutation('toggleCreateModal', { namespace: 'table' })
   private toggleCreateModal: any;
   @Mutation('toggleDeleteModal', { namespace: 'table' })
   private toggleDeleteModal: any;
+  private get isDesktop() {
+    return !!window.electronAPI;
+  }
+
   private created() {
     this.getDbList();
+    if (this.isDesktop) {
+      this.loadProfiles();
+    }
   }
 }
 </script>

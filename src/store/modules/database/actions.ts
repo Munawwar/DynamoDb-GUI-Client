@@ -2,7 +2,8 @@ import { ActionTree, ActionContext } from 'vuex';
 import { DatabaseModuleState } from './types';
 import { RootState } from '@/store/types';
 import DynamoDB from 'aws-sdk/clients/dynamodb';
-import { encrypt, decrypt, MP_SALT_KEY, MP_CHECK_KEY } from '@/utils/crypto';
+import { encrypt, decrypt } from '@/utils/crypto';
+import { listProfiles } from '@/utils/desktop';
 
 function getMasterPassword(rootState: any): { password: string; salt: ArrayBuffer } {
   return {
@@ -12,7 +13,7 @@ function getMasterPassword(rootState: any): { password: string; salt: ArrayBuffe
 }
 
 function removeDbFromStorage(
-  { commit, dispatch, rootState }: ActionContext<DatabaseModuleState, RootState>,
+  { commit, dispatch }: ActionContext<DatabaseModuleState, RootState>,
   db: any,
 ) {
   localStorage.removeItem(`${db.name}-db`);
@@ -31,18 +32,20 @@ async function setCredentials({
   if (!getters.validateForm) {
     return;
   }
-  // In case of editing remove existing db first
-  localStorage.removeItem(`${(rootState as any).currentDb}-db`);
 
-  // Check for duplicate by trying to read existing entry
+  const currentDb = rootState.currentDb;
+  const isEditingCurrentDb = state.showEditModal && currentDb;
   const existingRaw = localStorage.getItem(`${database.name}-db`);
-  if (existingRaw) {
+  if (existingRaw && (!isEditingCurrentDb || database.name !== currentDb)) {
     commit(
       'showResponse',
       { message: 'Database with that name already exists' },
       { root: true },
     );
     return;
+  }
+  if (isEditingCurrentDb) {
+    localStorage.removeItem(`${currentDb}-db`);
   }
 
   const DB = new DynamoDB({ ...database.configs });
@@ -58,8 +61,8 @@ async function setCredentials({
   const encrypted = await encrypt(JSON.stringify(database), password, salt);
   localStorage.setItem(`${database.name}-db`, encrypted);
 
-  dispatch('getDbList');
-  dispatch('getCurrentDb', database.name, { root: true });
+  await dispatch('getDbList');
+  await dispatch('getCurrentDb', database.name, { root: true });
   commit('setToDefault');
 }
 
@@ -73,7 +76,7 @@ async function getDbList({ commit, rootState }: ActionContext<DatabaseModuleStat
     try {
       const decrypted = await decrypt(value, password, salt);
       newDbList.push(JSON.parse(decrypted));
-    } catch {
+    } catch (err) {
       continue;
     }
   }
@@ -81,12 +84,31 @@ async function getDbList({ commit, rootState }: ActionContext<DatabaseModuleStat
   commit('setDbList', newDbList);
 }
 
+async function loadProfiles({ commit }: ActionContext<DatabaseModuleState, RootState>) {
+  commit('setLoadingProfiles', true);
+  try {
+    const profiles = await listProfiles();
+    const lastProfile = localStorage.getItem('__last_profile');
+    commit('setProfiles', profiles);
+    commit(
+      'setSelectedProfile',
+      profiles.some((profile) => profile.name === lastProfile)
+        ? lastProfile
+        : (profiles[0] && profiles[0].name) || '',
+    );
+  } catch (err) {
+    commit('setProfiles', []);
+    commit('showResponse', err, { root: true });
+  }
+  commit('setLoadingProfiles', false);
+}
+
 function submitRemoteForm({
   dispatch,
   commit,
 }: ActionContext<DatabaseModuleState, RootState>) {
   commit('correctInputs', 'remote');
-  dispatch('setCredentials');
+  return dispatch('setCredentials');
 }
 
 function submitLocalForm({
@@ -94,7 +116,7 @@ function submitLocalForm({
   commit,
 }: ActionContext<DatabaseModuleState, RootState>) {
   commit('correctInputs', 'local');
-  dispatch('setCredentials');
+  return dispatch('setCredentials');
 }
 
 async function fillEditForm(
@@ -108,7 +130,7 @@ async function fillEditForm(
     const decrypted = await decrypt(raw, password, salt);
     const database = JSON.parse(decrypted);
     commit('fillEditFormFromData', database);
-  } catch {
+  } catch (err) {
     commit('showResponse', { message: 'Failed to decrypt database entry.' }, { root: true });
   }
 }
@@ -119,6 +141,7 @@ const actions: ActionTree<DatabaseModuleState, RootState> = {
   submitRemoteForm,
   submitLocalForm,
   getDbList,
+  loadProfiles,
   fillEditForm,
 };
 

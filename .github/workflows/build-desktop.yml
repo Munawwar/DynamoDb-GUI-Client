@@ -1,0 +1,121 @@
+name: Build Desktop Apps
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  test:
+    name: Lint and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm run test:unit
+
+  package:
+    name: Package ${{ matrix.name }}
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux AppImage
+            os: ubuntu-latest
+            command: npx electron-builder --linux AppImage --publish never
+            artifact: linux
+            paths: |
+              dist/*.AppImage
+              dist/*.blockmap
+              dist/latest-linux.yml
+          - name: Windows
+            os: windows-latest
+            command: npx electron-builder --win nsis portable --publish never
+            artifact: windows
+            paths: |
+              dist/*.exe
+              dist/*.blockmap
+              dist/latest.yml
+          - name: macOS
+            os: macos-latest
+            command: npx electron-builder --mac dmg zip --publish never
+            artifact: macos
+            paths: |
+              dist/*.dmg
+              dist/*.zip
+              dist/*.blockmap
+              dist/latest-mac.yml
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare Windows icon
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Copy-Item public/favicon.ico build/icon.ico
+
+      - name: Prepare macOS icon
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          mkdir -p build/icon.iconset
+          sips -z 16 16 build/icon.png --out build/icon.iconset/icon_16x16.png
+          sips -z 32 32 build/icon.png --out build/icon.iconset/icon_16x16@2x.png
+          sips -z 32 32 build/icon.png --out build/icon.iconset/icon_32x32.png
+          sips -z 64 64 build/icon.png --out build/icon.iconset/icon_32x32@2x.png
+          sips -z 128 128 build/icon.png --out build/icon.iconset/icon_128x128.png
+          sips -z 256 256 build/icon.png --out build/icon.iconset/icon_128x128@2x.png
+          sips -z 256 256 build/icon.png --out build/icon.iconset/icon_256x256.png
+          sips -z 512 512 build/icon.png --out build/icon.iconset/icon_256x256@2x.png
+          sips -z 512 512 build/icon.png --out build/icon.iconset/icon_512x512.png
+          sips -z 1024 1024 build/icon.png --out build/icon.iconset/icon_512x512@2x.png
+          iconutil -c icns build/icon.iconset -o build/icon.icns
+
+      - name: Build renderer
+        run: npm run build
+
+      - name: Package app
+        run: ${{ matrix.command }}
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.paths }}
+          if-no-files-found: error
